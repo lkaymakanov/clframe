@@ -131,6 +131,45 @@ public class GEEngineUtils {
     }
     
     /***
+     * Creates engine by the the class  name of the class located in the source files in the application itself!!!
+     * @return
+     */
+    public static IGEEngine createEngineByClassName(String className){
+    	GEEngineData data = loadEngineData(className);
+    	GEEngineData e=null;
+    	synchronized (engines) {
+			e = engines.get(getEngineName(data.properties));
+			if(e!=null) return e.enigine;
+			data.enigine =  createEngine(data);
+			engines.put(getEngineName(data.properties), data);
+		}
+    	return data.enigine;
+    }
+    
+    /**
+     * Creates engine by the the class  located in the source files in the application itself!!!
+     * @param c
+     * @return
+     */
+    public static IGEEngine createEngineByClass(Class c){
+    	return createEngineByClassName(c.getName());
+    }
+    
+    
+    /***
+     * Load engine data for className located in the source file of the application!!!
+     * @param className
+     * @return
+     */
+    private static GEEngineData loadEngineData(String className){
+    	GEEngineData data = new GEEngineData();
+    	data.engineClassLoader = new GEEngineCl(data);
+    	data.properties = new Properties();
+    	data.properties.put("name", className);
+    	return data;
+    }
+    
+    /***
      * Loads from byte array into memory the data needed by the engine!!!
      * @param engine
      * @return
