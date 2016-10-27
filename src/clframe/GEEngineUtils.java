@@ -166,7 +166,7 @@ public class GEEngineUtils {
     	data.engineClassLoader = new GEEngineCl(data);
     	data.properties = new Properties();
     	data.properties.put("name", className);
-		data.resources.put("key", new ResourceInformation("key=myencryptedsha512key".getBytes(), "key"));
+		data.resources.put("engine.properties", new ResourceInformation("key=myencryptedsha512key".getBytes(), "engine.properties"));
      	return data;
     }
     
