@@ -238,6 +238,15 @@ public class GEEngineUtils {
         return data.resources.get(resourceName).bytes;
     }
     
+	/***
+     * Add a resource to engine resources!!!
+     */
+    public static void addResourceToEngine(String engineName, String resourceName, byte [] resourceBytes){
+    	  GEEngineData data = 	engines.get(engineName);
+          if(data == null) return ;
+          data.resources.put(resourceName, new ResourceInformation(resourceBytes, resourceName));
+    }
+    
     
     /***
      * Returns class bytes for by engineName & classname!!!
