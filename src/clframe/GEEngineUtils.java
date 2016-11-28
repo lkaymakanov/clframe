@@ -176,7 +176,7 @@ public class GEEngineUtils {
      * @return
      */
     private static GEEngineData loadEngineData(byte[] engine){
-    	GEEZipProcessor pr = new GEEZipProcessor();
+    	GEEZipProcessor pr = new GEEZipProcessor(1024*1024);
     	ZipUtils.zipProcess(new ByteArrayInputStream(engine), pr);
     	pr.outData.engineClassLoader = new GEEngineCl(pr.outData);
     	return pr.outData;
@@ -188,7 +188,7 @@ public class GEEngineUtils {
      * @return
      */
     private static GEEngineData loadEngineData(File f){
-    	GEEZipProcessor pr = new GEEZipProcessor();
+    	GEEZipProcessor pr = new GEEZipProcessor(1024*1024);
     	ZipUtils.zipProcess(f, pr);
     	pr.outData.engineClassLoader = new GEEngineCl(pr.outData);
     	return pr.outData;

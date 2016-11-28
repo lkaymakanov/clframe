@@ -7,17 +7,32 @@ import java.util.zip.ZipInputStream;
 
 import clframe.ZipUtils.IZipEntryProcessor;
 
-/***
- * A Zip processor callback that launches a jar file containing engine!!!
- * @author lubo
- *
- */
-class GEEZipProcessor implements IZipEntryProcessor {
-	GEEngineData outData = new GEEngineData();
-	private int bufferSize = 1024*1024;
+class DecryptGEEZipProcessor implements IZipEntryProcessor  {
 	
-	GEEZipProcessor(int bufferSize){
+	final String ALPHABET = "_-+[]{}1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";    //alphabet for encrypting  the source files names
+	private SimpleOffsetEncoderDecoder encdec;
+	private IDecrypt dec;
+	private int bufferSize;
+	GEEngineData outData = new GEEngineData();
+	
+	DecryptGEEZipProcessor(String pass, int bufferSize){
 		this.bufferSize = bufferSize;
+		encdec = new SimpleOffsetEncoderDecoder(ALPHABET, pass); 
+		dec = new IDecrypt() {
+			@Override
+			public byte[] decode(byte[] bytes, int len) {
+				// TODO Auto-generated method stub
+				return encdec.decode(bytes, len);
+			}
+			
+			@Override
+			public String decode(String s) {
+				// TODO Auto-generated method stub
+				return encdec.decode(s);
+			}
+		};
+			
+		
 	}
 
 	@Override
@@ -28,23 +43,23 @@ class GEEZipProcessor implements IZipEntryProcessor {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		
 		try {
-			if(isFile && entry.getName().endsWith(".class")) {
+			if(isFile && dec.decode(entry.getName()).endsWith(".class")) {
 					String cName = entry.getName().replace("/", ".");
 					//System.out.println(cName);
 					
 					//put into the class loader hashMap
 					int len;
 		            while ((len = zis.read(buffer)) > 0) {
-		            	os.write(buffer, 0, len);
+		            	os.write(encdec.decode(buffer,len), 0, len);
 		            }
 		            outData.classMap.put(cName, new ClassInfo(os.toByteArray()));
 				
 			}else if(isFile){
 				//load resource file
-				String name = entry.getName().replace("/", ".");
+				String name = dec.decode(entry.getName()).replace("/", ".");
 				int len;
 	            while ((len = zis.read(buffer)) > 0) {
-	            	os.write(buffer, 0, len);
+	            	os.write(encdec.decode(buffer,len), 0, len);
 	            }
 	            ResourceInformation info = new ResourceInformation(os.toByteArray(), name);
 	            if(name.equals("engine.properties")){
@@ -61,4 +76,9 @@ class GEEZipProcessor implements IZipEntryProcessor {
 	
 	}
 
+	
+	static interface IDecrypt{
+		String decode(String s);
+		byte []  decode(byte [] bytes,  int len);
+	}
 }
