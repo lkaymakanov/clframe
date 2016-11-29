@@ -85,7 +85,7 @@ class GEEngineData implements IGEEngineData{
 	@Override
 	public void setRowData(Map<String, RawData> rowData) {
 		// TODO Auto-generated method stub
-		
+		this.rawData = rowData;
 	}
 	
 }

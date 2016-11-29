@@ -48,7 +48,7 @@ class DecryptGEEZipProcessor extends GEERawZipProcessor  {
             	ByteArrayInputStream ins = new ByteArrayInputStream(decrypt(raw.bytes));
             	geeZipProcessor.outData.setProperties( Utils.loadproperties(ins));
             }
-			geeZipProcessor.outData.getResources().put(dottedEntryName, new ResourceInfo(decrypt(raw.bytes),FileNamePath.fromFileNamePath( entryName), FileNamePath.fromFileNamePath(decodedEntryName)));
+			geeZipProcessor.outData.getResources().put(dottedEntryName, new ResourceInfo(decrypt(raw.bytes),FileNamePath.fromFileNamePath(decodedEntryName), FileNamePath.fromFileNamePath(entryName)));
 		}
 	}
 	
