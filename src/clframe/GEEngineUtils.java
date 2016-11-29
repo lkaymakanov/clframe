@@ -384,7 +384,6 @@ public class GEEngineUtils {
 	
 	private static void printRawDataNames(IGEEngineData data){
 		for(String k :data.getRowData().keySet()){
-			//RawData cinfo = data.getRowData().get(k);
 			System.out.println("RawDataName : " + k );
 		}
 	}
