@@ -1,13 +1,18 @@
 package clframe;
 
+import java.io.Serializable;
 
 /**
  * A file name & path to the file name!!!
  * @author lubo
  *
  */
-class FileNamePath {
+class FileNamePath implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8975810387985498303L;
 	private String [] path;
 	private String fileName;
 	

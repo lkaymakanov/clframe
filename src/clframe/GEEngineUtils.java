@@ -1,10 +1,13 @@
 package clframe;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -363,29 +366,38 @@ public class GEEngineUtils {
 	 * Prints the names of the resources loaded in the GEEngineData!!!
 	 * @param data
 	 */
-	private static void printResourcesNames(IGEEngineData data){
+	private static StringBuilder printResourcesNames(IGEEngineData data){
+		StringBuilder sb = new StringBuilder();
 		for(String k :data.getResources().keySet()){
 			ResourceInfo cinfo = data.getResources().get(k);
-			System.out.println("ResourceName : " + k + ", Original ResourceName: " + cinfo.getOriginalName().getFullName());
+			sb.append("ResourceName : " + k + ", Original ResourceName: " + cinfo.getOriginalName().getFullName());
+			sb.append("\n");
 		}
+		return sb;
 	}
 	
 	/**
 	 * Prints the names of the classes loaded in the GEEngineData!!!
 	 * @param data
 	 */
-	private static void printClassesNames(IGEEngineData data){
+	private static StringBuilder printClassesNames(IGEEngineData data){
+		StringBuilder sb = new StringBuilder();
 		for(String k :data.getClassMap().keySet()){
 			ClassInfo cinfo = data.getClassMap().get(k);
-			System.out.println("Class : " + k + ", Original Class: " + cinfo.getOriginalName().getFullName());
+			sb.append("Class : " + k + ", Original Class: " + cinfo.getOriginalName().getFullName());
+			sb.append("\n");
 		}
+		return sb;
 	}
 	
 	
-	private static void printRawDataNames(IGEEngineData data){
+	private static StringBuilder printRawDataNames(IGEEngineData data){
+		StringBuilder sb = new StringBuilder();
 		for(String k :data.getRowData().keySet()){
-			System.out.println("RawDataName : " + k );
+			sb.append("RawDataName : " + k );
+			sb.append("\n");
 		}
+		return sb;
 	}
 	
 	/**
@@ -444,6 +456,21 @@ public class GEEngineUtils {
 	private static void saveDataToFile(File parentFolder, FileNamePath filePathName, byte [] fContent){
 		
 	}
+	
+	/***
+	 * Serializes engine data!!!
+	 * @param data
+	 * @return
+	 * @throws IOException
+	 */
+	private static byte[] serializeData(Object data) throws IOException{
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		ObjectOutputStream oaout = new ObjectOutputStream(os);
+		oaout.writeObject(data);
+		oaout.flush();
+		oaout.close();
+		return os.toByteArray();
+	}
     
     /***
      * Creates an object by calling constructor with types argtypes, and arguments args!!!
@@ -470,12 +497,12 @@ public class GEEngineUtils {
     	return createObjectByClassName(engineName, className, null, null);
     }
     
-    public static void main(String [] args) throws FileNotFoundException{
-    	IGEEngineData data = loadEngineData(new File("C:\\Users\\lubo\\Desktop\\gee\\deng.jar"), 1024*1024, "geengine");
-    	printClassesNames(data);
-    	printResourcesNames(data);
-    	printRawDataNames(data);
-    	
-    	
+    public static void main(String [] args) throws IOException{
+    	IGEEngineData data = loadEngineData(new File("C:\\Users\\Lubo\\Desktop\\ltf\\7852\\ltf-7852.jar"), 1024*1024, "");
+    	System.out.println(printClassesNames(data).toString());
+    	System.out.println(printResourcesNames(data).toString());
+    	System.out.println(printRawDataNames(data).toString());
+    	byte [] b = serializeData(data.getRowData());
+    	System.out.println(b.length + "  End...");
     }
 }

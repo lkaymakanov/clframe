@@ -18,8 +18,8 @@ class GEEngineData implements IGEEngineData{
 	private Map<String, ResourceInfo> resources = new Hashtable<String, ResourceInfo>();
 	private Map<String, RawData> rawData = new Hashtable<String, RawData>();
 	private Properties properties;
-	private ClassLoader engineClassLoader;
-	private IGEEngine enigine;
+	private transient ClassLoader engineClassLoader;
+	private transient IGEEngine enigine;
 	
 	GEEngineData(){
 		

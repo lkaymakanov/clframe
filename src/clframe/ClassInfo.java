@@ -1,14 +1,20 @@
 package clframe;
 
+import java.io.Serializable;
+
 /**
  * Class bytes wrapper used by MemoryClass loader!!!
  * @author lubo
  *
  */
-class ClassInfo {
+class ClassInfo implements Serializable{
   
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 388813657863184765L;
 	byte []  bytes;
-	Class clazzz;
+	transient Class clazzz;
 	private FileNamePath originalName;
 	private FileNamePath name;
 	
