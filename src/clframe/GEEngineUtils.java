@@ -188,7 +188,7 @@ public class GEEngineUtils {
     	data.setEngineClassLoader( new GEEngineCl(data));
     	data.setProperties( new Properties());
     	data.getProperties().put("name", className);
-		data.getResources().put("engine.properties", new ResourceInfo("key=myencryptedsha512key".getBytes(), "engine.properties", "originalResourceName"));
+		data.getResources().put("engine.properties", new ResourceInfo("key=myencryptedsha512key".getBytes(),FileNamePath.fromFileNamePath("engine.properties"), FileNamePath.fromFileNamePath("originalResourceName")));
      	return data;
     }
     
@@ -289,7 +289,7 @@ public class GEEngineUtils {
     public static void addResourceToEngine(String engineName, String resourceName, byte [] resourceBytes, String originalResourceName){
     	  IGEEngineData data = 	engines.get(engineName);
           if(data == null) return ;
-          data.getResources().put(resourceName, new ResourceInfo(resourceBytes, resourceName, originalResourceName));
+          data.getResources().put(resourceName, new ResourceInfo(resourceBytes, FileNamePath.fromFileNamePath(resourceName), FileNamePath.fromFileNamePath(originalResourceName)));
     }
     
     
@@ -366,7 +366,7 @@ public class GEEngineUtils {
 	private static void printResourcesNames(IGEEngineData data){
 		for(String k :data.getResources().keySet()){
 			ResourceInfo cinfo = data.getResources().get(k);
-			System.out.println("ResourceName : " + k + ", Original ResourceName: " + cinfo.originalName);
+			System.out.println("ResourceName : " + k + ", Original ResourceName: " + cinfo.getOriginalName().getFullName());
 		}
 	}
 	
@@ -377,7 +377,7 @@ public class GEEngineUtils {
 	private static void printClassesNames(IGEEngineData data){
 		for(String k :data.getClassMap().keySet()){
 			ClassInfo cinfo = data.getClassMap().get(k);
-			System.out.println("Class : " + k + ", Original Class: " + cinfo.originalName);
+			System.out.println("Class : " + k + ", Original Class: " + cinfo.getOriginalName().getFullName());
 		}
 	}
 	
@@ -385,6 +385,39 @@ public class GEEngineUtils {
 	private static void printRawDataNames(IGEEngineData data){
 		for(String k :data.getRowData().keySet()){
 			System.out.println("RawDataName : " + k );
+		}
+	}
+	
+	/**
+	 * Exports Engine Raw Data to a Files!!!
+	 * @param file
+	 * @param data
+	 */
+	private static void exportRawData(File outDir, IGEEngineData data){
+		for(String k :data.getRowData().keySet()){
+			
+		}
+	}
+	
+	/**
+	 * Exports Engine Classes to a Files!!!
+	 * @param file
+	 * @param data
+	 */
+	private static void exportClasses(File outDir, IGEEngineData data){
+		for(String k :data.getClassMap().keySet()){
+			
+		}
+	}
+	
+	/***
+	 * Exports Engine Resources to a Files!!!
+	 * @param file
+	 * @param data
+	 */
+	private static void exportResources(File outDir, IGEEngineData data){
+		for(String k :data.getResources().keySet()){
+			
 		}
 	}
     
@@ -419,5 +452,7 @@ public class GEEngineUtils {
     	printClassesNames(data);
     	printResourcesNames(data);
     	printRawDataNames(data);
+    	
+    	
     }
 }

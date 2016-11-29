@@ -2,13 +2,23 @@ package clframe;
 
 class ResourceInfo {
 	byte []  bytes;
-	String resourceName;
-	String originalName;
+	private FileNamePath resourceName;
+	private FileNamePath originalName;
 	
 	
-	public ResourceInfo(byte []  bytes, String name, String originalName){
+	public ResourceInfo(byte []  bytes, FileNamePath resourceName, FileNamePath originalName){
 		this.bytes = bytes;
-		this.resourceName = name;
+		this.resourceName = resourceName;
 		this.originalName = originalName;
 	}
+
+	public FileNamePath getResourceName() {
+		return resourceName;
+	}
+
+
+	public FileNamePath getOriginalName() {
+		return originalName;
+	}
+	
 }

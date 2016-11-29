@@ -36,11 +36,11 @@ class DecryptGEEZipProcessor extends GEERawZipProcessor  {
 		String entryName = entry.getName();
 		RawData raw = geeZipProcessor.outData.getRowData().get(entryName);
 		if(raw == null) return;
-		String decodedEntryName = decrypt(raw.name);
+		String decodedEntryName = decrypt(raw.getName().getFullName());
 		String dottedEntryName = decodedEntryName.replace("/", ".");
 		if(decodedEntryName.endsWith(".class")){
 			//put into the class loader hashMap
-			geeZipProcessor.outData.getClassMap().put(dottedEntryName, new ClassInfo(decrypt(raw.bytes), dottedEntryName));
+			geeZipProcessor.outData.getClassMap().put(dottedEntryName, new ClassInfo(decrypt(raw.bytes),FileNamePath.fromFileNamePath(decodedEntryName),FileNamePath.fromFileNamePath(entryName)));
 		}else{
 			//load resource file
 			if(decodedEntryName.equals("engine.properties")){
@@ -48,7 +48,7 @@ class DecryptGEEZipProcessor extends GEERawZipProcessor  {
             	ByteArrayInputStream ins = new ByteArrayInputStream(decrypt(raw.bytes));
             	geeZipProcessor.outData.setProperties( Utils.loadproperties(ins));
             }
-			geeZipProcessor.outData.getResources().put(dottedEntryName, new ResourceInfo(decrypt(raw.bytes), decodedEntryName, entryName));
+			geeZipProcessor.outData.getResources().put(dottedEntryName, new ResourceInfo(decrypt(raw.bytes),FileNamePath.fromFileNamePath( entryName), FileNamePath.fromFileNamePath(decodedEntryName)));
 		}
 	}
 	

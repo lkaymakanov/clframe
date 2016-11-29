@@ -1,12 +1,17 @@
 package clframe;
 
 class RawData {
-	String name;
+	private FileNamePath name;
 	byte [] bytes;
 	
-	RawData(byte[] byteArray, String name) {
+	RawData(byte[] byteArray, FileNamePath name) {
 		// TODO Auto-generated constructor stub
 		this.bytes = byteArray;
 		this.name = name;
 	}
+	
+	public FileNamePath getName() {
+		return name;
+	}
+	
 }
