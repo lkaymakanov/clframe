@@ -478,7 +478,7 @@ public class GEEngineUtils {
      * @param className
      * @return
      */
-    public static Object createObjectByClassName(String engineName, String className, Class<?>[] argtypes,
+    private static Object createObjectByClassName(String engineName, String className, Class<?>[] argtypes,
 			Object[] args){
     	try {
     		Class c = loadClass(engineName, className);
@@ -493,7 +493,7 @@ public class GEEngineUtils {
     /***
      * Creates an object by calling constructor non-argument constructor!!!
      */
-    public static Object createObjectByClassName(String engineName, String className){
+    private static Object createObjectByClassName(String engineName, String className){
     	return createObjectByClassName(engineName, className, null, null);
     }
     
