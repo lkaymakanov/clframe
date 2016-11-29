@@ -9,9 +9,11 @@ class ClassInfo {
   
 	byte []  bytes;
 	Class clazzz;
+	String originalName;
 	
-	public ClassInfo(byte []  bytes){
+	public ClassInfo(byte []  bytes, String originalName){
 		this.bytes = bytes;
+		this.originalName = originalName;
 	}
 
 }

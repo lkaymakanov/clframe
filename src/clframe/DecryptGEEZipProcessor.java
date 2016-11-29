@@ -1,84 +1,84 @@
 package clframe;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import clframe.ZipUtils.IZipEntryProcessor;
-
-class DecryptGEEZipProcessor implements IZipEntryProcessor  {
+/**
+ * A zip processor that decrypts the zip entries using SimpleOffsetEncoderDecoder!!!
+ * @author lubo
+ *
+ */
+class DecryptGEEZipProcessor extends GEERawZipProcessor  {
 	
 	final String ALPHABET = "_-+[]{}1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";    //alphabet for encrypting  the source files names
 	private SimpleOffsetEncoderDecoder encdec;
-	private IDecrypt dec;
-	private int bufferSize;
-	GEEngineData outData = new GEEngineData();
+	private GEERawZipProcessor geeZipProcessor;
 	
-	DecryptGEEZipProcessor(String pass, int bufferSize){
-		this.bufferSize = bufferSize;
-		encdec = new SimpleOffsetEncoderDecoder(ALPHABET, pass); 
-		dec = new IDecrypt() {
-			@Override
-			public byte[] decode(byte[] bytes, int len) {
-				// TODO Auto-generated method stub
-				return encdec.decode(bytes, len);
-			}
-			
-			@Override
-			public String decode(String s) {
-				// TODO Auto-generated method stub
-				return encdec.decode(s);
-			}
-		};
-			
-		
+	DecryptGEEZipProcessor(GEERawZipProcessor geeZipProcessor, String pass, int bufferSize){
+		super(bufferSize);
+		this.geeZipProcessor = geeZipProcessor;
+		if(pass!=null && !pass.equals("")) encdec =  new SimpleOffsetEncoderDecoder(ALPHABET, pass); 
+		this.outData  = geeZipProcessor.outData;
 	}
+	
+	DecryptGEEZipProcessor(GEERawZipProcessor geeZipProcessor){
+		super(1024*1024);
+		this.geeZipProcessor = geeZipProcessor;
+		this.outData  = geeZipProcessor.outData;
+	}
+	
 
 	@Override
 	public void process(ZipEntry entry, ZipInputStream zis) {
-		// TODO Auto-generated method stub
-		boolean isFile = !entry.isDirectory();
-		byte [] buffer =  new byte[bufferSize];
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		
-		try {
-			if(isFile && dec.decode(entry.getName()).endsWith(".class")) {
-					String cName = entry.getName().replace("/", ".");
-					//System.out.println(cName);
-					
-					//put into the class loader hashMap
-					int len;
-		            while ((len = zis.read(buffer)) > 0) {
-		            	os.write(encdec.decode(buffer,len), 0, len);
-		            }
-		            outData.classMap.put(cName, new ClassInfo(os.toByteArray()));
-				
-			}else if(isFile){
-				//load resource file
-				String name = dec.decode(entry.getName()).replace("/", ".");
-				int len;
-	            while ((len = zis.read(buffer)) > 0) {
-	            	os.write(encdec.decode(buffer,len), 0, len);
-	            }
-	            ResourceInformation info = new ResourceInformation(os.toByteArray(), name);
-	            if(name.equals("engine.properties")){
-	            	//read properties
-	            	ByteArrayInputStream ins = new ByteArrayInputStream(info.bytes);
-	            	outData.properties = Utils.loadproperties(ins);
-	            }
-	            outData.resources.put(name, info);
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException(e);
+		geeZipProcessor.process(entry, zis);
+		String entryName = entry.getName();
+		RawData raw = geeZipProcessor.outData.getRowData().get(entryName);
+		if(raw == null) return;
+		String decodedEntryName = decrypt(raw.name);
+		String dottedEntryName = decodedEntryName.replace("/", ".");
+		if(decodedEntryName.endsWith(".class")){
+			//put into the class loader hashMap
+			geeZipProcessor.outData.getClassMap().put(dottedEntryName, new ClassInfo(decrypt(raw.bytes), dottedEntryName));
+		}else{
+			//load resource file
+			geeZipProcessor.outData.getClassMap().put(dottedEntryName, new ClassInfo(decrypt(raw.bytes), dottedEntryName));
+			if(decodedEntryName.equals("engine.properties")){
+            	//read properties
+            	ByteArrayInputStream ins = new ByteArrayInputStream(decrypt(raw.bytes));
+            	geeZipProcessor.outData.setProperties( Utils.loadproperties(ins));
+            }
+			geeZipProcessor.outData.getResources().put(dottedEntryName, new ResourceInfo(decrypt(raw.bytes), decodedEntryName, entryName));
 		}
+	}
 	
+	
+	private String decrypt(String name){
+		return encdec == null ? name : encodeDecodePath(name, "", encdec, false);
+	}
+	
+	private byte[] decrypt(byte [] b){
+		return encdec == null ? b: encdec.decode(b);
 	}
 
 	
-	static interface IDecrypt{
-		String decode(String s);
-		byte []  decode(byte [] bytes,  int len);
+	private  String encodeDecodePath(String path, String root, SimpleOffsetEncoderDecoder enc, boolean encode){
+		String pathnoRoot = path.replace(root, "");   //remove root
+		
+		//split to folders 
+		String [] folders = pathnoRoot.replace(File.separator, "/").split("/");
+		for(int i = 0; i < folders.length; i++){   //encode folder names
+			folders[i]= encode ?  enc.encode(folders[i]) : enc.decode(folders[i]);
+		}
+		
+		//construct back folder path
+		String res = (root == null || root.equals("")) ? "" : root + "/";
+		int i = 0;
+		for(String s : folders) {
+			res+= (i > 0) ? "/"+ s :  s;
+			i++;
+		}
+		return res;
 	}
 }

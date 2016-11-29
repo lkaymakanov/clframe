@@ -2,13 +2,15 @@ package clframe;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
 
 
 /**
@@ -18,7 +20,7 @@ import java.util.Set;
  */
 public class GEEngineUtils {
 	
-	private static Map<String, GEEngineData> engines = new HashMap<String, GEEngineData>();
+	private static Map<String, IGEEngineData> engines = new HashMap<String, IGEEngineData>();
 	
     /**
      * Returns Engine by Engine name!!!
@@ -26,7 +28,7 @@ public class GEEngineUtils {
      */
     public static IGEEngine getEngine(String engineName){
     	synchronized (engines) {
-			return  engines.get(engineName).enigine;
+			return  engines.get(engineName).getEnigine();
     	}
     }
     
@@ -44,20 +46,30 @@ public class GEEngineUtils {
      * If engine exists under that name the existing engine is returned!!! Otherwise registers & returns new IGEEngine!!!
      * @param f
      * @return
+     * @throws FileNotFoundException 
      */
-    public static IGEEngine createEngine(File f){
-    	GEEngineData data = loadEngineData(f);
-    	GEEngineData e=null;
-    	synchronized (engines) {
-			e = engines.get(getEngineName(data.properties));
-			if(e!=null) return e.enigine;
-			data.enigine = createEngine(data);
-			engines.put(getEngineName(data.properties), (data));
-		}
-    	
-    	return data.enigine;
+    public static IGEEngine createEngine(File f) throws FileNotFoundException{
+    	return createEngine(f, null);
     }
     
+    /**
+     * Creates an engine from engine File and a decryption pass!!! 
+     * @param f
+     * @param pass
+     * @return
+     * @throws FileNotFoundException 
+     */
+    public static IGEEngine createEngine(File f,  String pass) throws FileNotFoundException{
+    	IGEEngineData data = loadEngineData(f, 1024*1024, pass);
+    	IGEEngineData e = null;
+    	synchronized (engines) {
+			e = engines.get(getEngineName(data.getProperties()));
+			if(e!=null) return e.getEnigine();
+			data.setEnigine(createEngine(data));
+			engines.put(getEngineName(data.getProperties()), (data));
+		}
+    	return data.getEnigine();
+    }
     
     /***
      * Creates an engine from engine content passed as byte array!!!
@@ -66,15 +78,25 @@ public class GEEngineUtils {
      * @return
      */
     public static IGEEngine createEngine(byte[] engine){
-    	GEEngineData data = loadEngineData(engine);
-    	GEEngineData e=null;
+    	return createEngine(engine, null);
+    }
+    
+    /**
+     * Creates an engine from engine content passed as byte array and a decryption pass!!!
+     * @param engine
+     * @param pass
+     * @return
+     */
+    public static IGEEngine createEngine(byte[] engine, String pass){
+    	IGEEngineData data = loadEngineData(engine, 1024*1024, pass);
+    	IGEEngineData e=null;
     	synchronized (engines) {
-			e = engines.get(getEngineName(data.properties));
-			if(e!=null) return e.enigine;
-			data.enigine =  createEngine(data);
-			engines.put(getEngineName(data.properties), data);
+			e = engines.get(getEngineName(data.getProperties()));
+			if(e!=null) return e.getEnigine();
+			data.setEnigine(createEngine(data));
+			engines.put(getEngineName(data.getProperties()), data);
 		}
-    	return data.enigine;
+    	return data.getEnigine();
     }
     
     
@@ -99,10 +121,10 @@ public class GEEngineUtils {
      * @param data
      * @return
      */
-    private static IGEEngine createEngine(GEEngineData data){
+    private static IGEEngine createEngine(IGEEngineData data){
     	IGEEngine engine=null;
     	try {
-			engine = (IGEEngine)data.engineClassLoader.loadClass(getEngineName(data.properties)).newInstance();
+			engine = (IGEEngine)data.getEngineClassLoader().loadClass(getEngineName(data.getProperties())).newInstance();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -119,10 +141,10 @@ public class GEEngineUtils {
      */
     @SuppressWarnings("rawtypes")
 	private static Class loadClass(String engineName, String className){
-    	GEEngineData data = 	engines.get(engineName);
+    	IGEEngineData data = engines.get(engineName);
         if(data == null) return null;
     	try {
-			return data.engineClassLoader.loadClass(className);
+			return data.getEngineClassLoader().loadClass(className);
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -135,15 +157,15 @@ public class GEEngineUtils {
      * @return
      */
     public static IGEEngine createEngineByClassName(String className){
-    	GEEngineData data = loadEngineData(className);
-    	GEEngineData e=null;
+    	IGEEngineData data = loadEngineData(className);
+    	IGEEngineData e=null;
     	synchronized (engines) {
-			e = engines.get(getEngineName(data.properties));
-			if(e!=null) return e.enigine;
-			data.enigine =  createEngine(data);
-			engines.put(getEngineName(data.properties), data);
+			e = engines.get(getEngineName(data.getProperties()));
+			if(e!=null) return e.getEnigine();
+			data.setEnigine(createEngine(data));
+			engines.put(getEngineName(data.getProperties()), data);
 		}
-    	return data.enigine;
+    	return data.getEnigine();
     }
     
     /**
@@ -161,38 +183,53 @@ public class GEEngineUtils {
      * @param className
      * @return
      */
-    private static GEEngineData loadEngineData(String className){
-    	GEEngineData data = new GEEngineData();
-    	data.engineClassLoader = new GEEngineCl(data);
-    	data.properties = new Properties();
-    	data.properties.put("name", className);
-		data.resources.put("engine.properties", new ResourceInformation("key=myencryptedsha512key".getBytes(), "engine.properties"));
+    private static IGEEngineData loadEngineData(String className){
+    	IGEEngineData data = new GEEngineData();
+    	data.setEngineClassLoader( new GEEngineCl(data));
+    	data.setProperties( new Properties());
+    	data.getProperties().put("name", className);
+		data.getResources().put("engine.properties", new ResourceInfo("key=myencryptedsha512key".getBytes(), "engine.properties", "originalResourceName"));
      	return data;
     }
     
-    /***
-     * Loads from byte array into memory the data needed by the engine!!!
-     * @param engine
+  /***
+   * Loads from byte array into memory the data needed by the engine!!!
+   * @param engine
+   * @param pass
+   * @return
+   */
+    private static IGEEngineData loadEngineData(byte[] engine, int bufferSize, String pass){
+    	return loadEngineData(new ByteArrayInputStream(engine), bufferSize, pass);
+    }
+    
+    
+    /**
+     * Loads from input stream into memory the data needed by the engine!!!
+     * @param is
+     * @param bufferSize
+     * @param pass
      * @return
      */
-    private static GEEngineData loadEngineData(byte[] engine){
-    	GEEZipProcessor pr = new GEEZipProcessor(1024*1024);
-    	ZipUtils.zipProcess(new ByteArrayInputStream(engine), pr);
-    	pr.outData.engineClassLoader = new GEEngineCl(pr.outData);
+    private static IGEEngineData loadEngineData(InputStream is, int bufferSize, String pass){
+    	GEERawZipProcessor pr = new DecryptGEEZipProcessor(new GEERawZipProcessor(bufferSize), pass, bufferSize);   
+    	ZipUtils.zipProcess(is, pr);
+    	pr.outData.setEngineClassLoader(new GEEngineCl(pr.outData));
     	return pr.outData;
     }
     
+
     /**
      * Loads from engine file into memory the data needed by the engine !!!
      * @param f
+     * @param pass
      * @return
+     * @throws FileNotFoundException 
      */
-    private static GEEngineData loadEngineData(File f){
-    	GEEZipProcessor pr = new GEEZipProcessor(1024*1024);
-    	ZipUtils.zipProcess(f, pr);
-    	pr.outData.engineClassLoader = new GEEngineCl(pr.outData);
-    	return pr.outData;
+    private static IGEEngineData loadEngineData(File f, int bufferSize, String pass) throws FileNotFoundException{
+    	return loadEngineData(new FileInputStream(f), bufferSize, pass);
     }
+    
+    
     
     /***
      * Returns the names of registered engines!!!
@@ -208,9 +245,9 @@ public class GEEngineUtils {
      * @return
      */
     public static Set<String> getEngineClassNames(String engineName){
-       GEEngineData data = 	engines.get(engineName);
+       IGEEngineData data = 	engines.get(engineName);
        if(data == null) return null;
-       return data.classMap.keySet();
+       return data.getClassMap().keySet();
     }
     
     
@@ -220,9 +257,9 @@ public class GEEngineUtils {
      * @return
      */
     public static Set<String> getEngineResourceNames(String engineName){
-       GEEngineData data = 	engines.get(engineName);
+       IGEEngineData data = 	engines.get(engineName);
        if(data == null) return null;
-       return data.resources.keySet();
+       return data.getResources().keySet();
     }
     
     
@@ -233,18 +270,26 @@ public class GEEngineUtils {
      * @return
      */
     public static byte [] getEngineResource(String engineName, String resourceName){
-        GEEngineData data = 	engines.get(engineName);
+        IGEEngineData data = engines.get(engineName);
         if(data == null) return null;
-        return data.resources.get(resourceName).bytes;
+        return data.getResources().get(resourceName).bytes;
     }
     
 	/***
      * Add a resource to engine resources!!!
      */
     public static void addResourceToEngine(String engineName, String resourceName, byte [] resourceBytes){
-    	  GEEngineData data = 	engines.get(engineName);
+    	addResourceToEngine(engineName, resourceName, resourceBytes, "originalName");
+    }
+    
+    
+    /***
+     * Add a resource to engine resources!!!
+     */
+    public static void addResourceToEngine(String engineName, String resourceName, byte [] resourceBytes, String originalResourceName){
+    	  IGEEngineData data = 	engines.get(engineName);
           if(data == null) return ;
-          data.resources.put(resourceName, new ResourceInformation(resourceBytes, resourceName));
+          data.getResources().put(resourceName, new ResourceInfo(resourceBytes, resourceName, originalResourceName));
     }
     
     
@@ -255,9 +300,9 @@ public class GEEngineUtils {
      * @return
      */
     public static byte [] getEngineClass(String engineName, String className){
-        GEEngineData data = engines.get(engineName);
+        IGEEngineData data = engines.get(engineName);
         if(data == null) return null;
-        return data.classMap.get(className).bytes;
+        return data.getClassMap().get(className).bytes;
     }
     
     
@@ -268,9 +313,9 @@ public class GEEngineUtils {
      * @return
      */
     public static Enumeration<Object>  getEnginePropertyNames(String engineName){
-    	GEEngineData data = engines.get(engineName);
+    	IGEEngineData data = engines.get(engineName);
         if(data == null) return null;
-        return data.properties.keys();
+        return data.getProperties().keys();
     }
     
     /***
@@ -280,9 +325,9 @@ public class GEEngineUtils {
      * @return
      */
     public static Object  getEngineProperty(String engineName, String propertyKey){
-    	GEEngineData data = engines.get(engineName);
+    	IGEEngineData data = engines.get(engineName);
         if(data == null) return null;
-        return data.properties.get(propertyKey);
+        return data.getProperties().get(propertyKey);
     }
     
     
@@ -313,10 +358,37 @@ public class GEEngineUtils {
 		return type.newInstance();
 	    return type.getConstructor(argtypes).newInstance(args);
 	}
+	
+	/**
+	 * Prints the names of the resources loaded in the GEEngineData!!!
+	 * @param data
+	 */
+	private static void printResourcesNames(IGEEngineData data){
+		for(String k :data.getResources().keySet()){
+			ResourceInfo cinfo = data.getResources().get(k);
+			System.out.println("ResourceName : " + k + ", Original ResourceName: " + cinfo.originalName);
+		}
+	}
+	
+	/**
+	 * Prints the names of the classes loaded in the GEEngineData!!!
+	 * @param data
+	 */
+	private static void printClassesNames(IGEEngineData data){
+		for(String k :data.getClassMap().keySet()){
+			ClassInfo cinfo = data.getClassMap().get(k);
+			System.out.println("Class : " + k + ", Original Class: " + cinfo.originalName);
+		}
+	}
+	
+	
+	private static void printRawDataNames(IGEEngineData data){
+		for(String k :data.getRowData().keySet()){
+			//RawData cinfo = data.getRowData().get(k);
+			System.out.println("RawDataName : " + k );
+		}
+	}
     
-	
-	
-	
     
     /***
      * Creates an object by calling constructor with types argtypes, and arguments args!!!
@@ -341,5 +413,12 @@ public class GEEngineUtils {
      */
     public static Object createObjectByClassName(String engineName, String className){
     	return createObjectByClassName(engineName, className, null, null);
+    }
+    
+    public static void main(String [] args) throws FileNotFoundException{
+    	IGEEngineData data = loadEngineData(new File("C:\\Users\\lubo\\Desktop\\gee\\deng.jar"), 1024*1024, "geengine");
+    	printClassesNames(data);
+    	printResourcesNames(data);
+    	printRawDataNames(data);
     }
 }

@@ -1,9 +1,5 @@
 package clframe;
 
-
-
-
-
 /**
  * A class loader that loads classes from {@link GEEngineData}!!!
  * @author lubo
@@ -11,8 +7,8 @@ package clframe;
  */
 class GEEngineCl extends ClassLoader  {
 	
-	GEEngineData data;
-	GEEngineCl(GEEngineData data){
+	IGEEngineData data;
+	GEEngineCl(IGEEngineData data){
 		super(GEEngineCl.class.getClassLoader());
 		this.data = data;
 	}
@@ -22,7 +18,7 @@ class GEEngineCl extends ClassLoader  {
 	 * Finds a class by package.classname (fully qualified class name) example test.test.TestClass  !!
 	 */
     public synchronized Class findClass(String className)throws ClassNotFoundException{
-    	ClassInfo b = data.classMap.get(className + ".class");
+    	ClassInfo b = data.getClassMap().get(className + ".class");
     	
         byte[] classBytes = b == null ? null : b.bytes;
         
