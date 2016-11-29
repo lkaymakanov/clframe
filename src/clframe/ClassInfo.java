@@ -24,11 +24,11 @@ class ClassInfo implements Serializable{
 		this.originalName = originalName;
 	}
 
-	public FileNamePath getOriginalName() {
+	FileNamePath getOriginalName() {
 		return originalName;
 	}
 
-	public FileNamePath getName() {
+	FileNamePath getName() {
 		return name;
 	}
 

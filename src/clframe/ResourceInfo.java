@@ -13,18 +13,18 @@ class ResourceInfo implements Serializable {
 	private FileNamePath originalName;
 	
 	
-	public ResourceInfo(byte []  bytes, FileNamePath resourceName, FileNamePath originalName){
+	ResourceInfo(byte []  bytes, FileNamePath resourceName, FileNamePath originalName){
 		this.bytes = bytes;
 		this.resourceName = resourceName;
 		this.originalName = originalName;
 	}
 
-	public FileNamePath getResourceName() {
+	FileNamePath getResourceName() {
 		return resourceName;
 	}
 
 
-	public FileNamePath getOriginalName() {
+	FileNamePath getOriginalName() {
 		return originalName;
 	}
 	

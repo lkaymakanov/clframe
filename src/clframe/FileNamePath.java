@@ -22,16 +22,16 @@ class FileNamePath implements Serializable {
 		this.fileName = fileName;
 	}
 
-	public String[] getPath() {
+	String[] getPath() {
 		return path;
 	}
 
 
-	public String getFileName() {
+	String getFileName() {
 		return fileName;
 	}
 	
-	public String getFullName(){
+	String getFullName(){
 		return getPathPrivate() + "/" + fileName;
 	}
 	

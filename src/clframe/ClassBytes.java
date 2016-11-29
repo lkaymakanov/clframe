@@ -15,7 +15,7 @@ class ClassBytes implements Serializable {
 	private static final long serialVersionUID = -5728308783952114837L;
 	public byte []  bytes;
 	
-	public ClassBytes(byte []  bytes){
+	ClassBytes(byte []  bytes){
 		this.bytes = bytes;
 	}
 }
