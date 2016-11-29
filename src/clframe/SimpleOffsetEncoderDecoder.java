@@ -18,7 +18,7 @@ class SimpleOffsetEncoderDecoder {
 	 * @param alphabet
 	 * @param passPhrase
 	 */
-	public SimpleOffsetEncoderDecoder(String alphabet, String passPhrase){
+	SimpleOffsetEncoderDecoder(String alphabet, String passPhrase){
 		this(alphabet, passPhrase, passPhrase.length());
 	}
 	
@@ -27,7 +27,7 @@ class SimpleOffsetEncoderDecoder {
 	 * Creates SimpleOffsetEncoderDecoder by  pass phrase!!!
 	 * @param passPhrase
 	 */
-	public SimpleOffsetEncoderDecoder(String passPhrase){
+	SimpleOffsetEncoderDecoder(String passPhrase){
 		this(defaultAlphabet, passPhrase, passPhrase.length());
 	}
 	
@@ -92,7 +92,7 @@ class SimpleOffsetEncoderDecoder {
 	 * @param s
 	 * @return
 	 */
-	public  String encode(String s){
+	String encode(String s){
 		if(s == null) return null;
 		if(s.isEmpty()) return s;
 		StringBuilder sb = new StringBuilder();
@@ -109,7 +109,7 @@ class SimpleOffsetEncoderDecoder {
 	 * @param s
 	 * @return
 	 */
-	public  String decode(String s){
+	String decode(String s){
 		if(s == null) return null;
 		if(s.isEmpty()) return s;
 		StringBuilder sb = new StringBuilder();
@@ -172,22 +172,22 @@ class SimpleOffsetEncoderDecoder {
 	   return 	(positionInAlphabet + offset) >= length ? ((positionInAlphabet + offset) - length) : ((positionInAlphabet + offset) < 0 ? (positionInAlphabet + offset)  + length : (positionInAlphabet + offset) );
 	}
 	
-	public byte [] encode(byte [] bytes){
+	byte [] encode(byte [] bytes){
 		return encode(bytes, bytes.length);
 	}
 	
-	public byte [] encode(byte [] bytes, int len){
+	byte [] encode(byte [] bytes, int len){
 		for(int i = 0; i < len; i++){
 			bytes[i] = (byte)(bytes[i] + (offsets[(i % this.offsets.length)]));
 		}
 		return bytes;
 	}
 	
-	public byte [] decode(byte [] bytes){
+	byte [] decode(byte [] bytes){
 		return decode(bytes, bytes.length);
 	}
 	
-	public byte [] decode(byte [] bytes, int len){
+	byte [] decode(byte [] bytes, int len){
 		for(int i = 0; i < len; i++){
 			bytes[i] = (byte)(bytes[i] - (offsets[(i % this.offsets.length)]));
 		}
