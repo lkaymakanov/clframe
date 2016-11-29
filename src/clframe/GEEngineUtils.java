@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Savepoint;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -395,7 +396,8 @@ public class GEEngineUtils {
 	 */
 	private static void exportRawData(File outDir, IGEEngineData data){
 		for(String k :data.getRowData().keySet()){
-			
+			RawData r = data.getRowData().get(k); 
+			saveDataToFile(outDir,  r.getName(), r.bytes);
 		}
 	}
 	
@@ -406,7 +408,8 @@ public class GEEngineUtils {
 	 */
 	private static void exportClasses(File outDir, IGEEngineData data){
 		for(String k :data.getClassMap().keySet()){
-			
+			ClassInfo ci = data.getClassMap().get(k); 
+			saveDataToFile(outDir,  ci.getName(), ci.bytes);
 		}
 	}
 	
@@ -417,10 +420,31 @@ public class GEEngineUtils {
 	 */
 	private static void exportResources(File outDir, IGEEngineData data){
 		for(String k :data.getResources().keySet()){
-			
+			ResourceInfo ri = data.getResources().get(k); 
+			saveDataToFile(outDir,  ri.getResourceName(), ri.bytes);
 		}
 	}
     
+	/**
+	 * Saves data to a file!!!
+	 * @param parentFolder
+	 * @param filePathName
+	 * @param fContent
+	 */
+	private static void saveDataToFile(String parentFolder, FileNamePath filePathName, byte [] fContent){
+		
+	}
+	
+	
+	/**
+	 * Saves data to a file!!!
+	 * @param parentFolder
+	 * @param filePathName
+	 * @param fContent
+	 */
+	private static void saveDataToFile(File parentFolder, FileNamePath filePathName, byte [] fContent){
+		
+	}
     
     /***
      * Creates an object by calling constructor with types argtypes, and arguments args!!!
