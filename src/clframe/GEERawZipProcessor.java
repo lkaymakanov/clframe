@@ -33,7 +33,7 @@ class GEERawZipProcessor implements IZipEntryProcessor {
 	            while ((len = zis.read(buffer)) > 0) {
 	            	os.write(buffer, 0, len);
 	            }
-	            outData.getRowData().put(entry.getName(), new RawData(os.toByteArray(), FileNamePath.fromFileNamePath(entry.getName())));
+	            outData.getRawData().put(entry.getName(), new RawData(os.toByteArray(), FileNamePath.fromFileNamePath(entry.getName())));
 			}
 		}
 		catch (Exception e) {

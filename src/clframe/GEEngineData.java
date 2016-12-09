@@ -77,7 +77,7 @@ class GEEngineData implements IGEEngineData{
 	}
 
 	@Override
-	public Map<String, RawData> getRowData() {
+	public Map<String, RawData> getRawData() {
 		// TODO Auto-generated method stub
 		return rawData;
 	}
@@ -87,5 +87,6 @@ class GEEngineData implements IGEEngineData{
 		// TODO Auto-generated method stub
 		this.rawData = rowData;
 	}
+
 	
 }

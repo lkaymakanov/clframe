@@ -15,11 +15,17 @@ class FileNamePath implements Serializable {
 	private static final long serialVersionUID = 8975810387985498303L;
 	private String [] path;
 	private String fileName;
+	private boolean addSeparator;
 	
 	
 	FileNamePath(String [] path, String fileName){
+		this(path, fileName, true);
+	}
+	
+	FileNamePath(String [] path, String fileName, boolean addSeparator){
 		this.path = path;
 		this.fileName = fileName;
+		this.addSeparator = addSeparator;
 	}
 
 	String[] getPath() {
@@ -32,7 +38,9 @@ class FileNamePath implements Serializable {
 	}
 	
 	String getFullName(){
-		return getPathPrivate() + "/" + fileName;
+		String s = getPathPrivate();
+		if(addSeparator) s+="/";
+		return  s +  fileName;
 	}
 	
 	private  String getPathPrivate(){

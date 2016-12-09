@@ -1,17 +1,15 @@
 package clframe;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.Properties;
 
 
-interface IGEEngineData extends Serializable {
+interface IGEEngineData extends IMapRawData{
 	 Map<String, ClassInfo> getClassMap();
 	 Map<String, ResourceInfo> getResources();
 	 Properties getProperties();
 	 ClassLoader getEngineClassLoader();
 	 IGEEngine getEnigine();
-	 Map<String, RawData> getRowData();
 	 
 	 void setClassMap(Map<String, ClassInfo> m);
 	 void setResources(Map<String, ResourceInfo> r);
