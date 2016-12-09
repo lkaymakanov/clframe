@@ -8,8 +8,8 @@ package clframe;
 class GEEngineCl extends ClassLoader  {
 	
 	IGEEngineData data;
-	GEEngineCl(IGEEngineData data){
-		super(GEEngineCl.class.getClassLoader());
+	GEEngineCl(IGEEngineData data, ClassLoader parent){
+		super(parent == null ? GEEngineCl.class.getClassLoader():parent);
 		this.data = data;
 	}
 	

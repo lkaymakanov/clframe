@@ -202,7 +202,7 @@ public class GEEngineUtils {
      */
     private static IGEEngineData loadEngineData(String className){
     	IGEEngineData data = new GEEngineData();
-    	data.setEngineClassLoader( new GEEngineCl(data));
+    	data.setEngineClassLoader( new GEEngineCl(data, null));
     	data.setProperties( new Properties());
     	data.getProperties().put("name", className);
 		data.getResources().put("engine.properties", new ResourceInfo("key=myencryptedsha512key".getBytes(),FileNamePath.fromFileNamePath("engine.properties"), FileNamePath.fromFileNamePath("originalResourceName")));
@@ -230,7 +230,7 @@ public class GEEngineUtils {
     private static IGEEngineData loadEngineData(InputStream is, int bufferSize, String pass){
     	GEERawZipProcessor pr = new DecryptGEEZipProcessor(new GEERawZipProcessor(bufferSize), pass, bufferSize);   
     	ZipUtils.zipProcess(is, pr);
-    	pr.outData.setEngineClassLoader(new GEEngineCl(pr.outData));
+    	pr.outData.setEngineClassLoader(new GEEngineCl(pr.outData, null));
     	return pr.outData;
     }
     
@@ -532,9 +532,9 @@ public class GEEngineUtils {
      * @param rawData
      * @return
      */
-    private static IGEEngineData fromRawData(IMapRawData rawData){
+    private static IGEEngineData fromRawData(IMapRawData rawData, ClassLoader parent){
     	GEEngineData data = new GEEngineData();
-    	data.setEngineClassLoader(new GEEngineCl(data));
+    	data.setEngineClassLoader(new GEEngineCl(data, parent));
     	data.setRowData(rawData.getRawData());
     	for(RawData rd: rawData.getRawData().values()){
     		FileNamePath fname = rd.getName();
@@ -567,12 +567,13 @@ public class GEEngineUtils {
     /**
      * Get class loader for raw data!!!
      * @param data
+     * @param parent
      * @return
      * @throws UnsupportedEncodingException 
      */
-    public static ClassLoader getClassLoader(List<byte []> data) throws UnsupportedEncodingException{
+    public static ClassLoader getClassLoader(List<byte []> data, ClassLoader parent) throws UnsupportedEncodingException{
     	IMapRawData  m = getRawDataForClassBytes(data);
-    	IGEEngineData edata = fromRawData(m);
+    	IGEEngineData edata = fromRawData(m, parent);
     	return edata.getEngineClassLoader();
     }
     
@@ -629,7 +630,7 @@ public class GEEngineUtils {
     	data.add(ByteArrays.en);
     	data.add(ByteArrays.enf);
     	data.add(ByteArrays.def);
-    	ClassLoader ld = getClassLoader(data); 
+    	ClassLoader ld = getClassLoader(data, null); 
     	/*IEncoderFactory ef = (IEncoderFactory)getInstance(ld.loadClass("token.SimpleOffsetEncoderFactory"), new Class[]{String.class}, new Object[]{"mypass"});
     	IDecoderFactory def = (IDecoderFactory)getInstance(ld.loadClass("token.SimpleOffsetDecoderFactory"), new Class[]{String.class}, new Object[]{"mypass"});
     	IToken token = new SharedToken();
