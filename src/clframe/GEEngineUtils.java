@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -514,8 +515,9 @@ public class GEEngineUtils {
      * Returns row data map for list of  classes containing its name as header beginning!!! The first 2 bytes show header name length!!!
      * @param l
      * @return
+     * @throws UnsupportedEncodingException 
      */
-    private static IMapRawData getRawDataForClassBytes(List<byte []> l){
+    private static IMapRawData getRawDataForClassBytes(List<byte []> l) throws UnsupportedEncodingException{
     	MapRawData  map = new MapRawData();
     	
     	for(byte [] a:l){
@@ -546,8 +548,9 @@ public class GEEngineUtils {
      * Returns row data for class containing its name as header beginning!!! The first 2 bytes show header name length!!!
      * @param b
      * @return
+     * @throws UnsupportedEncodingException 
      */
-    private static RawData getRawInfo(byte [] b){
+    private static RawData getRawInfo(byte [] b) throws UnsupportedEncodingException{
     	 int offset = 2;
 	   	 int length = (((b[0] << 8 ) | b[1])) & 0x0000ffff;
 	   	 byte [] nb;
@@ -556,7 +559,7 @@ public class GEEngineUtils {
 	   		 nb[i] = b[i+offset]; 
 	   	 }
 	   	 byte [] clb = Arrays.copyOfRange(b, length+offset, b.length);
-	   	 String name = new String(nb);
+	   	 String name = new String(nb, "UTF-8");
 	     RawData d = new RawData(clb, new FileNamePath(null, name, false));
 	   	 return d;
     }
@@ -565,8 +568,9 @@ public class GEEngineUtils {
      * Get class loader for raw data!!!
      * @param data
      * @return
+     * @throws UnsupportedEncodingException 
      */
-    public static ClassLoader getClassLoader(List<byte []> data){
+    public static ClassLoader getClassLoader(List<byte []> data) throws UnsupportedEncodingException{
     	IMapRawData  m = getRawDataForClassBytes(data);
     	IGEEngineData edata = fromRawData(m);
     	return edata.getEngineClassLoader();
@@ -621,12 +625,12 @@ public class GEEngineUtils {
     	System.out.println(printRawDataNames(data).toString());
     	byte [] b = serializeData(data.getRowData());
     	System.out.println(b.length + "  End...");*/
-    	/*List<byte []> data= new ArrayList<byte[]>();
-    	data.add(ByteArrays.decoderFactory);
-    	data.add(ByteArrays.encoderDecoder);
-    	data.add(ByteArrays.encoderFactory);
+    	List<byte []> data= new ArrayList<byte[]>();
+    	data.add(ByteArrays.en);
+    	data.add(ByteArrays.enf);
+    	data.add(ByteArrays.def);
     	ClassLoader ld = getClassLoader(data); 
-    	IEncoderFactory ef = (IEncoderFactory)getInstance(ld.loadClass("token.SimpleOffsetEncoderFactory"), new Class[]{String.class}, new Object[]{"mypass"});
+    	/*IEncoderFactory ef = (IEncoderFactory)getInstance(ld.loadClass("token.SimpleOffsetEncoderFactory"), new Class[]{String.class}, new Object[]{"mypass"});
     	IDecoderFactory def = (IDecoderFactory)getInstance(ld.loadClass("token.SimpleOffsetDecoderFactory"), new Class[]{String.class}, new Object[]{"mypass"});
     	IToken token = new SharedToken();
     	byte [] tenc = TokenUtils.encryptToken(token, ef);
