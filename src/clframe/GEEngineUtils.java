@@ -620,17 +620,17 @@ public class GEEngineUtils {
     
     
     public static void main(String [] args) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, SecurityException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException{
-    	/*IGEEngineData data = loadEngineData(new File("C:\\Users\\Lubo\\Desktop\\ltf\\7852\\ltf-7852.jar"), 1024*1024, "");
-    	System.out.println(printClassesNames(data).toString());
+    	/*IGEEngineData data = loadEngineData(new File("C:\\Users\\my\\Desktop\\eng.jar"), 1024*1024, null);
+    	/*System.out.println(printClassesNames(data).toString());
     	System.out.println(printResourcesNames(data).toString());
     	System.out.println(printRawDataNames(data).toString());
     	byte [] b = serializeData(data.getRowData());
     	System.out.println(b.length + "  End...");*/
-    	List<byte []> data= new ArrayList<byte[]>();
-    	data.add(ByteArrays.en);
-    	data.add(ByteArrays.enf);
-    	data.add(ByteArrays.def);
-    	ClassLoader ld = getClassLoader(data, null); 
+    	List<byte []> datad= new ArrayList<byte[]>();
+    	datad.add(ByteArrays.en);
+    	datad.add(ByteArrays.enf);
+    	datad.add(ByteArrays.def);
+    	ClassLoader ld = getClassLoader(datad, null); 
     	/*IEncoderFactory ef = (IEncoderFactory)getInstance(ld.loadClass("token.SimpleOffsetEncoderFactory"), new Class[]{String.class}, new Object[]{"mypass"});
     	IDecoderFactory def = (IDecoderFactory)getInstance(ld.loadClass("token.SimpleOffsetDecoderFactory"), new Class[]{String.class}, new Object[]{"mypass"});
     	IToken token = new SharedToken();
