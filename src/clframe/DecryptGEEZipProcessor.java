@@ -38,6 +38,7 @@ class DecryptGEEZipProcessor extends GEERawZipProcessor  {
 		if(raw == null) return;
 		String decodedEntryName = decrypt(raw.getName().getFullName());
 		String dottedEntryName = decodedEntryName.replace("/", ".");
+		//System.out.println(decodedEntryName);
 		if(decodedEntryName.endsWith(".class")){
 			//put into the class loader hashMap
 			geeZipProcessor.outData.getClassMap().put(dottedEntryName, new ClassInfo(decrypt(raw.bytes),FileNamePath.fromFileNamePath(decodedEntryName),FileNamePath.fromFileNamePath(entryName)));
