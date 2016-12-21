@@ -39,7 +39,7 @@ class FileNamePath implements Serializable {
 	
 	String getFullName(){
 		String s = getPathPrivate();
-		if(addSeparator) s+="/";
+		if(!s.equals("") && addSeparator) s+="/";
 		return  s +  fileName;
 	}
 	

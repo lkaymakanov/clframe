@@ -620,7 +620,7 @@ public class GEEngineUtils {
     
     
     public static void main(String [] args) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, SecurityException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException{
-    	/*IGEEngineData data = loadEngineData(new File("C:\\Users\\my\\Desktop\\eng.jar"), 1024*1024, null);
+    	//IGEEngineData data = loadEngineData(new File("C:\\Users\\my\\Desktop\\eng.jar"), 1024*1024, null);
     	/*System.out.println(printClassesNames(data).toString());
     	System.out.println(printResourcesNames(data).toString());
     	System.out.println(printRawDataNames(data).toString());
