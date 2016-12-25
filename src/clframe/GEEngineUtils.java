@@ -158,7 +158,8 @@ public class GEEngineUtils {
      * @param className
      * @return
      */
-    private static Class loadClass(IGEEngineData data, String className){
+    @SuppressWarnings("rawtypes")
+	private static Class loadClass(IGEEngineData data, String className){
     	 if(data == null) return null;
      	try {
  			return data.getEngineClassLoader().loadClass(className);
@@ -368,6 +369,7 @@ public class GEEngineUtils {
 	 * @throws IllegalArgumentException 
 	 * @throws Exception
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Object getInstance(Class type,
 					Class<?>[] argtypes,
 					Object[] args) throws InstantiationException, IllegalAccessException, IllegalArgumentException, SecurityException, InvocationTargetException, NoSuchMethodException  {
@@ -477,6 +479,7 @@ public class GEEngineUtils {
 	 * @return
 	 * @throws IOException
 	 */
+	@SuppressWarnings("unused")
 	private static byte[] serializeData(Object data) throws IOException{
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		ObjectOutputStream oaout = new ObjectOutputStream(os);
@@ -492,10 +495,12 @@ public class GEEngineUtils {
      * @param className
      * @return
      */
-    private static Object createObjectByClassName(String engineName, String className, Class<?>[] argtypes,
+    @SuppressWarnings("unchecked")
+	private static Object createObjectByClassName(String engineName, String className, Class<?>[] argtypes,
 			Object[] args){
     	try {
-    		Class c = loadClass(engineName, className);
+    		@SuppressWarnings("rawtypes")
+			Class c = loadClass(engineName, className);
     		if (argtypes == null || args == null)
     			return c.newInstance();
     		    return c.getConstructor(argtypes).newInstance(args);
