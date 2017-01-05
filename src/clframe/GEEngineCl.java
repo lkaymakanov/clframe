@@ -1,5 +1,6 @@
 package clframe;
 
+
 /**
  * A class loader that loads classes from {@link GEEngineData}!!!
  * @author lubo
@@ -32,6 +33,7 @@ class GEEngineCl extends ClassLoader  {
         	if(b.clazzz != null) return b.clazzz;
             b.clazzz = defineClass(className, classBytes, 0, classBytes.length);
             resolveClass(b.clazzz);
+            //System.out.println(className + " loaded...");
             return b.clazzz;
         }
     }

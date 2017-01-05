@@ -177,10 +177,11 @@ class SimpleOffsetEncoderDecoder {
 	}
 	
 	byte [] encode(byte [] bytes, int len){
+		byte [] ret = new byte[len];
 		for(int i = 0; i < len; i++){
-			bytes[i] = (byte)(bytes[i] + (offsets[(i % this.offsets.length)]));
+			ret[i] = (byte)(bytes[i] + (offsets[(i % this.offsets.length)]));
 		}
-		return bytes;
+		return ret;
 	}
 	
 	byte [] decode(byte [] bytes){
@@ -188,9 +189,10 @@ class SimpleOffsetEncoderDecoder {
 	}
 	
 	byte [] decode(byte [] bytes, int len){
+		byte [] ret = new byte[len];
 		for(int i = 0; i < len; i++){
-			bytes[i] = (byte)(bytes[i] - (offsets[(i % this.offsets.length)]));
+			ret[i] = (byte)(bytes[i] - (offsets[(i % this.offsets.length)]));
 		}
-		return bytes;
+		return ret;
 	}
 }

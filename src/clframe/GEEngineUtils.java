@@ -205,8 +205,8 @@ public class GEEngineUtils {
     	IGEEngineData data = new GEEngineData();
     	data.setEngineClassLoader( new GEEngineCl(data, null));
     	data.setProperties( new Properties());
-    	data.getProperties().put("name", className);
-		data.getResources().put("engine.properties", new ResourceInfo("key=myencryptedsha512key".getBytes(),FileNamePath.fromFileNamePath("engine.properties"), FileNamePath.fromFileNamePath("originalResourceName")));
+    	data.getProperties().put(ClFrameConst.NAME, className);
+		data.getResources().put(ClFrameConst.ENGINE_PROP_FILE_NAME, new ResourceInfo("key=d55720e30d36024dbfa38b86c9d14077ecdf66699ee0444432249bf98844955df35f15985e6f290f6cd10b3f47382c0fec241c1dfba5692f3adb6b28a0a6852c".getBytes(),FileNamePath.fromFileNamePath("engine.properties"), FileNamePath.fromFileNamePath("originalResourceName")));
      	return data;
     }
     
@@ -312,7 +312,7 @@ public class GEEngineUtils {
     
     
     /***
-     * Returns class bytes for by engineName & classname!!!
+     * Returns class bytes for by engineName & class name!!!
      * @param engineName
      * @param className
      * @return
@@ -543,7 +543,7 @@ public class GEEngineUtils {
     	data.setRowData(rawData.getRawData());
     	for(RawData rd: rawData.getRawData().values()){
     		FileNamePath fname = rd.getName();
-    		if(fname.getFileName().endsWith(".class"))	data.getClassMap().put(rd.getName().getFullName(), new ClassInfo(rd.bytes, fname, fname));
+    		if(fname.getFileName().endsWith(ClFrameConst.CLASS_EXTENSION))	data.getClassMap().put(rd.getName().getFullName(), new ClassInfo(rd.bytes, fname, fname));
     		else data.getResources().put(rd.getName().getFullName(), new ResourceInfo(rd.bytes, fname, fname));
     	}
     	return data;
@@ -636,6 +636,19 @@ public class GEEngineUtils {
     	datad.add(ByteArrays.enf);
     	datad.add(ByteArrays.def);
     	ClassLoader ld = getClassLoader(datad, null); 
+    	
+    	//test loading jar files
+    	IGEEngineData denc = loadEngineData(new File("C:\\Users\\lubo\\Desktop\\gee\\deng.eng"), 1024*1024, "geengine");
+    	IGEEngineData noen = loadEngineData(new File("C:\\Users\\lubo\\Desktop\\gee\\eng.eng"), 1024*1024, null);
+    	
+    	System.out.println(printClassesNames(denc));
+    	System.out.println(printRawDataNames(denc));
+    	System.out.println(printResourcesNames(denc));
+    	
+    	System.out.println(printClassesNames(noen));
+    	System.out.println(printRawDataNames(noen));
+    	System.out.println(printResourcesNames(noen));
+    	
     	/*IEncoderFactory ef = (IEncoderFactory)getInstance(ld.loadClass("token.SimpleOffsetEncoderFactory"), new Class[]{String.class}, new Object[]{"mypass"});
     	IDecoderFactory def = (IDecoderFactory)getInstance(ld.loadClass("token.SimpleOffsetDecoderFactory"), new Class[]{String.class}, new Object[]{"mypass"});
     	IToken token = new SharedToken();
@@ -646,7 +659,7 @@ public class GEEngineUtils {
     	//System.out.println(ci.getName().getFullName());
     }
     
-    
+   
     
     
     
