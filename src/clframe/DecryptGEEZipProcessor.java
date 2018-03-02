@@ -1,6 +1,7 @@
 package clframe;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -32,8 +33,8 @@ class DecryptGEEZipProcessor extends GEERawZipProcessor  {
 
 	@Override
 	public void process(ZipEntry entry, ZipInputStream zis) {
-		geeZipProcessor.process(entry, zis);
-		String entryName = entry.getName();
+		processs(entry, zis);
+		/*String entryName = entry.getName();
 		RawData raw = geeZipProcessor.outData.getRawData().get(entryName);
 		if(raw == null) return;
 		byte [] rawBytesDecoded = decrypt(raw.bytes);
@@ -51,6 +52,59 @@ class DecryptGEEZipProcessor extends GEERawZipProcessor  {
             	geeZipProcessor.outData.setProperties(Utils.loadproperties(ins));
             }
 			geeZipProcessor.outData.getResources().put(dottedEntryName, new ResourceInfo(rawBytesDecoded,FileNamePath.fromFileNamePath(decodedEntryName), FileNamePath.fromFileNamePath(entryName)));
+		}*/
+	}
+	
+	private void processs(ZipEntry entry, ZipInputStream zis){
+		boolean isFile = !entry.isDirectory();
+		byte [] buffer =  new byte[bufferSize];
+		
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		try {
+			//load row data
+			if(isFile){
+				int len;
+	            while ((len = zis.read(buffer)) > 0) {
+	            	os.write(buffer, 0, len);
+	            }
+	            String decodedEntryName = decrypt(entry.getName());
+	            if(decodedEntryName.endsWith(".jar")){
+	            	ByteArrayInputStream ins = new ByteArrayInputStream(os.toByteArray());
+	            	ZipUtils.zipProcess((ins), this);
+	            }else{
+	            	outData.getRawData().put(entry.getName(), new RawData(os.toByteArray(), FileNamePath.fromFileNamePath(entry.getName())));
+	            }
+			}
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			throw new RuntimeException(e);
+		}
+	}
+	
+	
+	/** 
+	 *Gets the entries in outData.rowData decrypts if necessary & fills classes & resources
+	 */
+	void decryptRawDataAndFillClassesResources(){
+		for(String entryName:geeZipProcessor.outData.getRawData().keySet()){
+			RawData raw = geeZipProcessor.outData.getRawData().get(entryName);
+			byte [] rawBytesDecoded = decrypt(raw.bytes);
+			String decodedEntryName = decrypt(raw.getName().getFullName());
+			String dottedEntryName = decodedEntryName.replace("/", ".");
+			
+			if(decodedEntryName.endsWith(ClFrameConst.CLASS_EXTENSION)){
+				//put into the class loader hashMap
+				geeZipProcessor.outData.getClassMap().put(dottedEntryName, new ClassInfo(rawBytesDecoded,FileNamePath.fromFileNamePath(decodedEntryName),FileNamePath.fromFileNamePath(entryName)));
+			}else{
+				//load resource file
+				if(decodedEntryName.equals(ClFrameConst.ENGINE_PROP_FILE_NAME)){
+	            	//read properties
+	            	ByteArrayInputStream ins = new ByteArrayInputStream(rawBytesDecoded);
+	            	geeZipProcessor.outData.setProperties(Utils.loadproperties(ins));
+	            }
+				geeZipProcessor.outData.getResources().put(dottedEntryName, new ResourceInfo(rawBytesDecoded,FileNamePath.fromFileNamePath(decodedEntryName), FileNamePath.fromFileNamePath(entryName)));
+			}
 		}
 	}
 	

@@ -1,6 +1,5 @@
 package clframe;
 
-import java.io.ByteArrayOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -13,7 +12,7 @@ import clframe.ZipUtils.IZipEntryProcessor;
  */
 class GEERawZipProcessor implements IZipEntryProcessor {
 	GEEngineData outData = new GEEngineData();
-	private int bufferSize = 1024*1024;
+	protected int bufferSize = 1024*1024;
 	
 	GEERawZipProcessor(int bufferSize){
 		this.bufferSize = bufferSize;
@@ -21,8 +20,7 @@ class GEERawZipProcessor implements IZipEntryProcessor {
 
 	@Override
 	public void process(ZipEntry entry, ZipInputStream zis) {
-		// TODO Auto-generated method stub
-		boolean isFile = !entry.isDirectory();
+		/*boolean isFile = !entry.isDirectory();
 		byte [] buffer =  new byte[bufferSize];
 		
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -33,13 +31,19 @@ class GEERawZipProcessor implements IZipEntryProcessor {
 	            while ((len = zis.read(buffer)) > 0) {
 	            	os.write(buffer, 0, len);
 	            }
-	            outData.getRawData().put(entry.getName(), new RawData(os.toByteArray(), FileNamePath.fromFileNamePath(entry.getName())));
+	            
+	            if(entry.getName().endsWith(".jar")){
+	            	ByteArrayInputStream ins = new ByteArrayInputStream(os.toByteArray());
+	            	ZipUtils.zipProcess((ins), this);
+	            }else{
+	            	outData.getRawData().put(entry.getName(), new RawData(os.toByteArray(), FileNamePath.fromFileNamePath(entry.getName())));
+	            }
 			}
 		}
 		catch (Exception e) {
 			// TODO: handle exception
 			throw new RuntimeException(e);
-		}
+		}*/
 	}
 }
 

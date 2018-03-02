@@ -229,8 +229,9 @@ public class GEEngineUtils {
      * @return
      */
     private static IGEEngineData loadEngineData(InputStream is, int bufferSize, String pass){
-    	GEERawZipProcessor pr = new DecryptGEEZipProcessor(new GEERawZipProcessor(bufferSize), pass, bufferSize);   
+    	DecryptGEEZipProcessor pr = new DecryptGEEZipProcessor(new GEERawZipProcessor(bufferSize), pass, bufferSize);   
     	ZipUtils.zipProcess(is, pr);
+    	pr.decryptRawDataAndFillClassesResources();
     	pr.outData.setEngineClassLoader(new GEEngineCl(pr.outData, null));
     	return pr.outData;
     }
@@ -631,16 +632,23 @@ public class GEEngineUtils {
     	System.out.println(printRawDataNames(data).toString());
     	byte [] b = serializeData(data.getRowData());
     	System.out.println(b.length + "  End...");*/
+    	
     	List<byte []> datad= new ArrayList<byte[]>();
     	datad.add(ByteArrays.en);
     	datad.add(ByteArrays.enf);
     	datad.add(ByteArrays.def);
     	ClassLoader ld = getClassLoader(datad, null); 
     	
-    	//test loading jar files
-    	IGEEngineData denc = loadEngineData(new File("C:\\Users\\lubo\\Desktop\\gee\\deng.eng"), 1024*1024, "geengine");
-    	IGEEngineData noen = loadEngineData(new File("C:\\Users\\lubo\\Desktop\\gee\\eng.eng"), 1024*1024, null);
     	
+    	IGEEngineData data = loadEngineData(new File("C:\\Users\\lubo\\Desktop\\eneng.eng"), 1024*1024, "geengine");
+    	System.out.println(printResourcesNames(data));
+    	System.out.println(printClassesNames(data));
+    	
+    	
+    	//test loading jar files
+    	//IGEEngineData denc = loadEngineData(new File("C:\\Users\\lubo\\Desktop\\gee\\deng.eng"), 1024*1024, "geengine");
+    	//IGEEngineData noen = loadEngineData(new File("C:\\Users\\lubo\\Desktop\\gee\\eng.eng"), 1024*1024, null);
+    	/*
     	System.out.println(printClassesNames(denc));
     	System.out.println(printRawDataNames(denc));
     	System.out.println(printResourcesNames(denc));
@@ -648,7 +656,7 @@ public class GEEngineUtils {
     	System.out.println(printClassesNames(noen));
     	System.out.println(printRawDataNames(noen));
     	System.out.println(printResourcesNames(noen));
-    	
+    	*/
     	/*IEncoderFactory ef = (IEncoderFactory)getInstance(ld.loadClass("token.SimpleOffsetEncoderFactory"), new Class[]{String.class}, new Object[]{"mypass"});
     	IDecoderFactory def = (IDecoderFactory)getInstance(ld.loadClass("token.SimpleOffsetDecoderFactory"), new Class[]{String.class}, new Object[]{"mypass"});
     	IToken token = new SharedToken();
