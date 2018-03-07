@@ -28,6 +28,59 @@ import java.util.Set;
 public class GEEngineUtils {
 	
 	private static Map<String, IGEEngineData> engines = new HashMap<String, IGEEngineData>();
+	private static Map<String, ILog>  loggers = new HashMap<String, ILog>();
+	private static String loggerName = "none";
+	static {
+		loggers.put("sysout", new SysOut());
+	}
+	
+	/**
+	 * Choosing the current logger by loggername!
+	 * @param loggername
+	 */
+	public static void setLoggerName(String loggername) {
+		loggerName = loggername;
+	}
+	
+	
+	/***
+	 * Logs a message using the selected log by previously called setLoggerName method!
+	 * @param message
+	 */
+	public static void log(String message) {
+		log(loggerName, message);
+	}
+	
+	/***
+	 * Logs message using logger! logger is selected based on loggerName!
+	 * @param loggerName
+	 * @param message
+	 */
+	public static void log(String loggerName, String message) {
+		ILog logger = loggers.get(loggerName);
+		if(logger != null) logger.log(message);
+	}
+	
+	
+	/***
+	 * Registers a logger by name!
+	 * @param loggerName
+	 * @param log
+	 */
+	public static void registerLogger(String loggerName, ILog log) {
+		loggers.put(loggerName, log);
+	}
+	
+	
+	/**
+	 * Returns the names of registered loggers!
+	 * @return
+	 */
+	public static Set<String> getLoggersNames(){
+		return loggers.keySet();
+	}
+	
+	
 	
     /**
      * Returns Engine by Engine name!!!

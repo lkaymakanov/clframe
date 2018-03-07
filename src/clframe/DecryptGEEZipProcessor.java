@@ -67,6 +67,7 @@ class DecryptGEEZipProcessor extends GEERawZipProcessor  {
 	            while ((len = zis.read(buffer)) > 0) {
 	            	os.write(buffer, 0, len);
 	            }
+	            GEEngineUtils.log("Processing zip entry " + entry.getName());
 	            String decodedEntryName = decrypt(entry.getName());
 	            if(decodedEntryName.endsWith(".jar")){
 	            	ByteArrayInputStream ins = new ByteArrayInputStream(os.toByteArray());
@@ -95,6 +96,7 @@ class DecryptGEEZipProcessor extends GEERawZipProcessor  {
 			
 			if(decodedEntryName.endsWith(ClFrameConst.CLASS_EXTENSION)){
 				//put into the class loader hashMap
+				GEEngineUtils.log("Adding to class data  " + decodedEntryName);
 				geeZipProcessor.outData.getClassMap().put(dottedEntryName, new ClassInfo(rawBytesDecoded,FileNamePath.fromFileNamePath(decodedEntryName),FileNamePath.fromFileNamePath(entryName)));
 			}else{
 				//load resource file
@@ -103,6 +105,7 @@ class DecryptGEEZipProcessor extends GEERawZipProcessor  {
 	            	ByteArrayInputStream ins = new ByteArrayInputStream(rawBytesDecoded);
 	            	geeZipProcessor.outData.setProperties(Utils.loadproperties(ins));
 	            }
+				GEEngineUtils.log("Adding to resource data  " + decodedEntryName);
 				geeZipProcessor.outData.getResources().put(dottedEntryName, new ResourceInfo(rawBytesDecoded,FileNamePath.fromFileNamePath(decodedEntryName), FileNamePath.fromFileNamePath(entryName)));
 			}
 		}

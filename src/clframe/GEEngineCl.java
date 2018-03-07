@@ -29,13 +29,19 @@ class GEEngineCl extends ClassLoader  {
             throw new ClassNotFoundException();
         }
         else{
-        	//System.out.println("=============== Looking for class " + className + " ================");
+            GEEngineUtils.log("=============== Looking for class " + className + " ================");
         	if(b.clazzz != null) return b.clazzz;
             b.clazzz = defineClass(className, classBytes, 0, classBytes.length);
             resolveClass(b.clazzz);
-            //System.out.println(className + " loaded...");
+            GEEngineUtils.log(className + " class finded...");
             return b.clazzz;
         }
     }
+    
 
+    @Override
+    public Class<?> loadClass(String name) throws ClassNotFoundException {
+    	GEEngineUtils.log(name + " class loaded  ");
+    	return super.loadClass(name);
+    }
 }
