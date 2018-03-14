@@ -1,5 +1,6 @@
 package clframe;
 
+import java.io.File;
 import java.io.Serializable;
 
 /**
@@ -44,13 +45,17 @@ class FileNamePath implements Serializable {
 	}
 	
 	private  String getPathPrivate(){
+		return getPathPrivate(path, "/");
+	}
+	
+	private static String getPathPrivate(String path [], String delimiter){
 		if(path == null || path.length == 0){
 			return "";
 		}
 		String res = "";
 		int i = 0;
 		for(String s : path) {
-			res+= (i > 0) ? "/"+ s :  s;
+			res+= (i > 0) ? delimiter + s :  s;
 			i++;
 		}
 		return res;
@@ -78,4 +83,24 @@ class FileNamePath implements Serializable {
 		return new FileNamePath(path, fName);
 	}
 	
+	private static void mkDir(String parent, String [] mkdirpath){
+		if(parent == null || mkdirpath == null) return;
+		String fullpath = parent.equals("") ? getPathPrivate(mkdirpath, "\\") : parent + "\\" + getPathPrivate(mkdirpath, "\\");
+		File f = new File(fullpath);
+		boolean exists = f.exists();
+		if(!exists ){
+			if(mkdirpath.length > 1) {mkDir(parent, shallowCoppy(mkdirpath, mkdirpath.length -1));}
+			f.mkdir();
+			System.out.println("creating dir " + f.getAbsolutePath());
+		}
+	}
+	
+	
+	public static void main(String [] args){
+	   	String p [] = new String [] {"d1", "d2", "d3","d4", "d5", "d6","d7", "d8", "d9","d10", "d11", "d12"};
+		mkDir("D:", p);
+		
+	   System.out.println(	new File("D:\\mydir\\mydir").exists());
+		
+	}
 }
