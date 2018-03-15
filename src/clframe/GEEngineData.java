@@ -27,64 +27,52 @@ class GEEngineData implements IGEEngineData{
 	
 	@Override
 	public Map<String, ClassInfo> getClassMap() {
-		// TODO Auto-generated method stub
 		return classMap;
 	}
 	@Override
 	public Map<String, ResourceInfo> getResources() {
-		// TODO Auto-generated method stub
 		return resources;
 	}
 	@Override
 	public Properties getProperties() {
-		// TODO Auto-generated method stub
 		return properties;
 	}
 	@Override
 	public ClassLoader getEngineClassLoader() {
-		// TODO Auto-generated method stub
 		return engineClassLoader;
 	}
 	@Override
 	public IGEEngine getEnigine() {
-		// TODO Auto-generated method stub
 		return enigine;
 	}
 	@Override
 	public void setClassMap(Map<String, ClassInfo> m) {
-		// TODO Auto-generated method stub
 		classMap = m;
 	}
 	@Override
 	public void setResources(Map<String, ResourceInfo> r) {
-		// TODO Auto-generated method stub
 		resources = r;
 	}
 	@Override
 	public void setProperties(Properties p) {
-		// TODO Auto-generated method stub
 		properties = p;
 	}
 	@Override
 	public void setEngineClassLoader(ClassLoader c) {
-		// TODO Auto-generated method stub
 		engineClassLoader = c;
 	}
 	@Override
 	public void setEnigine(IGEEngine e) {
-		// TODO Auto-generated method stub
 		enigine = e;
 	}
 
 	@Override
 	public Map<String, RawData> getRawData() {
-		// TODO Auto-generated method stub
 		return rawData;
 	}
 
 	@Override
 	public void setRowData(Map<String, RawData> rowData) {
-		// TODO Auto-generated method stub
 		this.rawData = rowData;
 	}
 

@@ -30,6 +30,7 @@ public class GEEngineUtils {
 	private static Map<String, IGEEngineData> engines = new HashMap<String, IGEEngineData>();
 	private static Map<String, ILog>  loggers = new HashMap<String, ILog>();
 	private static String loggerName = "none";
+	
 	static {
 		loggers.put("sysout", new SysOut());
 	}
@@ -109,7 +110,19 @@ public class GEEngineUtils {
      * @throws FileNotFoundException 
      */
     public static IGEEngine createEngine(File f) throws FileNotFoundException{
-    	return createEngine(f, null);
+    	return createEngine(f, 0);
+    }
+    
+   /**
+    * Creates an engine from engine File!!! 
+    * If engine exists under that name the existing engine is returned!!! Otherwise registers & returns new IGEEngine!!! 
+    * @param f
+    * @param offset - Offset to the engine in bytes
+    * @return
+    * @throws FileNotFoundException
+    */
+    public static IGEEngine createEngine(File f, int offset) throws FileNotFoundException{
+    	return createEngine(f, offset, null);
     }
     
     /**
@@ -119,8 +132,8 @@ public class GEEngineUtils {
      * @return
      * @throws FileNotFoundException 
      */
-    public static IGEEngine createEngine(File f,  String pass) throws FileNotFoundException{
-    	IGEEngineData data = loadEngineData(f, 1024*1024, pass);
+    public static IGEEngine createEngine(File f, int offset,  String pass) throws FileNotFoundException{
+    	IGEEngineData data = loadEngineData(f, offset, 1024*1024, pass);
     	IGEEngineData e = null;
     	synchronized (engines) {
 			e = engines.get(getEngineName(data.getProperties()));
@@ -137,8 +150,8 @@ public class GEEngineUtils {
      * @param engine
      * @return
      */
-    public static IGEEngine createEngine(byte[] engine){
-    	return createEngine(engine, null);
+    public static IGEEngine createEngine(byte[] engine, int offset){
+    	return createEngine(engine, offset, null);
     }
     
     /**
@@ -147,8 +160,8 @@ public class GEEngineUtils {
      * @param pass
      * @return
      */
-    public static IGEEngine createEngine(byte[] engine, String pass){
-    	IGEEngineData data = loadEngineData(engine, 1024*1024, pass);
+    public static IGEEngine createEngine(byte[] engine, int offset, String pass){
+    	IGEEngineData data = loadEngineData(engine, offset, 1024*1024, pass);
     	IGEEngineData e=null;
     	synchronized (engines) {
 			e = engines.get(getEngineName(data.getProperties()));
@@ -239,12 +252,24 @@ public class GEEngineUtils {
     	return data.getEnigine();
     }
     
+    /***
+     * Retrieves an engine class by engine name & class name!
+     * @param engineName
+     * @param classname
+     * @return
+     */
+    @SuppressWarnings("rawtypes")
+	public Class loadEngineClass(String engineName, String className) {
+    	return loadClass(engineName, className);
+    }
+    
     /**
      * Creates engine by the the class  located in the source files in the application itself!!!
      * @param c
      * @return
      */
-    public static IGEEngine createEngineByClass(Class c){
+    @SuppressWarnings("rawtypes")
+	public static IGEEngine createEngineByClass(Class c){
     	return createEngineByClassName(c.getName());
     }
     
@@ -269,8 +294,8 @@ public class GEEngineUtils {
    * @param pass
    * @return
    */
-    private static IGEEngineData loadEngineData(byte[] engine, int bufferSize, String pass){
-    	return loadEngineData(new ByteArrayInputStream(engine), bufferSize, pass);
+    private static IGEEngineData loadEngineData(byte[] engine, int offset, int bufferSize, String pass){
+    	return loadEngineData(new ByteArrayInputStream(engine, offset, (engine.length - offset)), bufferSize, pass);
     }
     
     
@@ -289,6 +314,34 @@ public class GEEngineUtils {
     	return pr.outData;
     }
     
+    
+    private static ByteArrayInputStream iFileIStreamToByteArrayInputStream(FileInputStream is, int offset) {
+    	List<Byte> fileBytes = new ArrayList<Byte>();
+    	try {
+			is.getChannel().position(offset);
+			int b = is.read();
+			while(b!=-1) {
+				fileBytes.add((byte)b);
+				b = is.read();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				is.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
+		}
+    	
+    	byte [] buffer = new byte[fileBytes.size()];
+    	int i = 0;
+    	for(Byte b: fileBytes) {
+    		buffer[i++] = b;
+    	}
+    	return new ByteArrayInputStream(buffer);
+    }
 
     /**
      * Loads from engine file into memory the data needed by the engine !!!
@@ -297,8 +350,8 @@ public class GEEngineUtils {
      * @return
      * @throws FileNotFoundException 
      */
-    private static IGEEngineData loadEngineData(File f, int bufferSize, String pass) throws FileNotFoundException{
-    	return loadEngineData(new FileInputStream(f), bufferSize, pass);
+    private static IGEEngineData loadEngineData(File f, int offset, int bufferSize, String pass) throws FileNotFoundException{
+    	return loadEngineData(offset == 0 ? new FileInputStream(f) : iFileIStreamToByteArrayInputStream(new FileInputStream(f), offset),  bufferSize, pass);
     }
     
     
@@ -359,9 +412,9 @@ public class GEEngineUtils {
      * Add a resource to engine resources!!!
      */
     public static void addResourceToEngine(String engineName, String resourceName, byte [] resourceBytes, String originalResourceName){
-    	  IGEEngineData data = 	engines.get(engineName);
-          if(data == null) return ;
-          data.getResources().put(resourceName, new ResourceInfo(resourceBytes, FileNamePath.fromFileNamePath(resourceName), FileNamePath.fromFileNamePath(originalResourceName)));
+    	 IGEEngineData data = 	engines.get(engineName);
+         if(data == null) return;
+         data.getResources().put(resourceName, new ResourceInfo(resourceBytes, FileNamePath.fromFileNamePath(resourceName), FileNamePath.fromFileNamePath(originalResourceName)));
     }
     
     
@@ -461,6 +514,7 @@ public class GEEngineUtils {
 	}
 	
 	
+	@SuppressWarnings("unused")
 	private static StringBuilder printRawDataNames(IGEEngineData data){
 		StringBuilder sb = new StringBuilder();
 		for(String k :data.getRawData().keySet()){
@@ -470,62 +524,7 @@ public class GEEngineUtils {
 		return sb;
 	}
 	
-	/**
-	 * Exports Engine Raw Data to a Files!!!
-	 * @param file
-	 * @param data
-	 */
-	private static void exportRawData(File outDir, IGEEngineData data){
-		for(String k :data.getRawData().keySet()){
-			RawData r = data.getRawData().get(k); 
-			saveDataToFile(outDir,  r.getName(), r.bytes);
-		}
-	}
 	
-	/**
-	 * Exports Engine Classes to a Files!!!
-	 * @param file
-	 * @param data
-	 */
-	private static void exportClasses(File outDir, IGEEngineData data){
-		for(String k :data.getClassMap().keySet()){
-			ClassInfo ci = data.getClassMap().get(k); 
-			saveDataToFile(outDir,  ci.getName(), ci.bytes);
-		}
-	}
-	
-	/***
-	 * Exports Engine Resources to a Files!!!
-	 * @param file
-	 * @param data
-	 */
-	private static void exportResources(File outDir, IGEEngineData data){
-		for(String k :data.getResources().keySet()){
-			ResourceInfo ri = data.getResources().get(k); 
-			saveDataToFile(outDir,  ri.getResourceName(), ri.bytes);
-		}
-	}
-    
-	/**
-	 * Saves data to a file!!!
-	 * @param parentFolder
-	 * @param filePathName
-	 * @param fContent
-	 */
-	private static void saveDataToFile(String parentFolder, FileNamePath filePathName, byte [] fContent){
-		
-	}
-	
-	
-	/**
-	 * Saves data to a file!!!
-	 * @param parentFolder
-	 * @param filePathName
-	 * @param fContent
-	 */
-	private static void saveDataToFile(File parentFolder, FileNamePath filePathName, byte [] fContent){
-		
-	}
 	
 	/***
 	 * Serializes engine data!!!
@@ -566,7 +565,8 @@ public class GEEngineUtils {
     /***
      * Creates an object by calling constructor non-argument constructor!!!
      */
-    private static Object createObjectByClassName(String engineName, String className){
+    @SuppressWarnings("unused")
+	private static Object createObjectByClassName(String engineName, String className){
     	return createObjectByClassName(engineName, className, null, null);
     }
     
@@ -638,7 +638,8 @@ public class GEEngineUtils {
     
     
     
-    private static void printByteArrayMatrix(byte [] b,  int bytesPerRow, String className) throws UnsupportedEncodingException{
+    @SuppressWarnings("unused")
+	private static void printByteArrayMatrix(byte [] b,  int bytesPerRow, String className) throws UnsupportedEncodingException{
 	   	 if(bytesPerRow > b.length) bytesPerRow = b.length;
 	   	 String byteArrayPrexif = " byte []  " + className + " = new byte[]{ \n" ;
 	   	 StringBuilder bd = new StringBuilder();
@@ -692,10 +693,16 @@ public class GEEngineUtils {
     	datad.add(ByteArrays.def);
     	ClassLoader ld = getClassLoader(datad, null); 
     	
+    	//getE
     	
-    	IGEEngineData data = loadEngineData(new File("C:\\Users\\lubo\\Desktop\\eneng.eng"), 1024*1024, "geengine");
+    	IGEEngineData data = loadEngineData(new File("C:\\Users\\Lubo\\Desktop\\jd-gui-windows-1.4.0\\kse-532\\myjar.jar"), 10, 1024*1024, null);
     	System.out.println(printResourcesNames(data));
     	System.out.println(printClassesNames(data));
+    	
+    	setLoggerName("sysout");
+    	new GEEngineFileExporter("", data).exportEngineData();
+    	
+    	//exportClasses(null, data);
     	
     	
     	//test loading jar files

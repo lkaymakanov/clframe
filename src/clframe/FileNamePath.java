@@ -83,13 +83,13 @@ class FileNamePath implements Serializable {
 		return new FileNamePath(path, fName);
 	}
 	
-	private static void mkDir(String parent, String [] mkdirpath){
+	public static void mkDir(String parent, String [] mkdirpath, String fileSeparator){
 		if(parent == null || mkdirpath == null) return;
-		String fullpath = parent.equals("") ? getPathPrivate(mkdirpath, "\\") : parent + "\\" + getPathPrivate(mkdirpath, "\\");
+		String fullpath = parent.equals("") ? getPathPrivate(mkdirpath, fileSeparator) : parent + "\\" + getPathPrivate(mkdirpath, fileSeparator);
 		File f = new File(fullpath);
 		boolean exists = f.exists();
 		if(!exists ){
-			if(mkdirpath.length > 1) {mkDir(parent, shallowCoppy(mkdirpath, mkdirpath.length -1));}
+			if(mkdirpath.length > 1) {mkDir(parent, shallowCoppy(mkdirpath, mkdirpath.length -1), fileSeparator);}
 			f.mkdir();
 			System.out.println("creating dir " + f.getAbsolutePath());
 		}
@@ -98,7 +98,7 @@ class FileNamePath implements Serializable {
 	
 	public static void main(String [] args){
 	   	String p [] = new String [] {"d1", "d2", "d3","d4", "d5", "d6","d7", "d8", "d9","d10", "d11", "d12"};
-		mkDir("D:", p);
+		mkDir("D:", p, "\\");
 		
 	   System.out.println(	new File("D:\\mydir\\mydir").exists());
 		

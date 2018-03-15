@@ -8,12 +8,12 @@ import java.io.Serializable;
  *
  */
 class ClassInfo implements Serializable{
-  
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 388813657863184765L;
 	byte []  bytes;
+	@SuppressWarnings("rawtypes")
 	transient Class clazzz;
 	private FileNamePath originalName;
 	private FileNamePath name;

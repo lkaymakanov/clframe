@@ -49,7 +49,8 @@ class FileSystemCl  extends ClassLoader{
 	/***
 	 * Finds a class by package.classname (fully qualified class name) example test.test.TestClass  !!
 	 */
-    public Class findClass(String className)throws ClassNotFoundException{
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public Class findClass(String className)throws ClassNotFoundException{
         byte[] classBytes = findClassBytes(pathToFile);
         if (classBytes == null){
             throw new ClassNotFoundException();

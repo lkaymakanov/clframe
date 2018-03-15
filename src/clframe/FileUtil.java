@@ -22,7 +22,6 @@ import java.util.zip.CRC32;
 
 final class FileUtil {
 	
-	
 	public static void saveToFile(File file, byte [] bytes) throws IOException{
 		FileOutputStream fOutputStream = new FileOutputStream(file);
 		try{
@@ -179,6 +178,7 @@ final class FileUtil {
 	 * @param destFile
 	 * @throws IOException
 	 */
+	@SuppressWarnings("resource")
 	public static void copyFile(File sourceFile, File destFile)
 			throws IOException {
 		if(sourceFile.getCanonicalPath().equals(destFile.getCanonicalPath())) return;

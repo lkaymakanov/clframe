@@ -18,13 +18,15 @@ class GEEngineCl extends ClassLoader  {
 	/***
 	 * Finds a class by package.classname (fully qualified class name) example test.test.TestClass  !!
 	 */
-    public synchronized Class findClass(String className)throws ClassNotFoundException{
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public synchronized Class findClass(String className)throws ClassNotFoundException{
     	ClassInfo b = data.getClassMap().get(className + ".class");
     	
         byte[] classBytes = b == null ? null : b.bytes;
         
         if (classBytes == null){
-        	Class c = getParent().loadClass(className);
+        	@SuppressWarnings("rawtypes")
+			Class c = getParent().loadClass(className);
         	if(c!= null) return c;
             throw new ClassNotFoundException();
         }
