@@ -40,9 +40,8 @@ public class GEEngineUtils {
 	 *
 	 */
 	public static class ENCRYPT_DECRYPT{
-		
 		/**
-		 * 
+		 * Creates engine from an encrypted input stream!!!
 		 * @param is
 		 * @param key
 		 * @param algorithm
@@ -65,6 +64,19 @@ public class GEEngineUtils {
 		public static  IGEEngine createEngine(InputStream is, Key key, String algorithm) throws IOException {
 			return GEEngineUtils.createEngine(EncryptedInputStream.getEncryptedInputStream(is, key, algorithm, ENCRYPT_MODE.DECRYPT), 0);
 		}
+		
+		/***
+		 * Creates input stream for encryption or decryption!!!
+		 * @param is
+		 * @param key
+		 * @param algorithm
+		 * @return
+		 * @throws IOException
+		 */
+		public static InputStream getEncryptedInputStream(InputStream is, Key key, String algorithm, ENCRYPT_MODE mode) throws IOException {
+			return EncryptedInputStream.getEncryptedInputStream(is, key, algorithm, mode);
+		}
+		
 	}
 	
 	static {
@@ -218,17 +230,29 @@ public class GEEngineUtils {
      * @throws IOException 
      */
     public static  IGEEngine createEngine(InputStream is, int offset, String pass) throws IOException {
-    	int size = ONE_MBYTE;
-    	byte [] b = new byte[size];
-    	byte [] engine = null;
-    	int i = 0;
-    	while((i = is.read(b, offset, size)) > 0) {
-    		engine = merge(engine, (engine == null ? 0: engine.length), b, i);
-    	}
-    	return createEngine(engine, offset, pass);
+    	return createEngine(toByteArray(is), offset, pass);
     }
     
     
+    
+    /**
+     * Converts inputStream to byte array!!
+     * @param is
+     * @return
+     * @throws IOException
+     */
+    public static byte [] toByteArray(InputStream is) throws IOException {
+    	int size = ONE_MBYTE;
+    	byte [] b = new byte[size];
+    	byte [] engine = null;byte[] ba= null;
+    	int i = 0;
+    	while((i = is.read(b)) > 0) {
+    		ba=  merge(engine, (engine == null ? 0: engine.length), b, i);
+    		engine = ba;
+    	}
+    	is.close();
+		return engine;
+    }
     
     
     /***
@@ -259,14 +283,15 @@ public class GEEngineUtils {
      * @param a2
      * @return
      */
-    private static byte[] merge(byte[] a1, int a1Size, byte [] a2, int a2Size) {
-    	if(a1==null) return a2;
-    	if(a2==null) return a1;
-    	byte [] all = new byte[a1Size + a2Size];
+    public static byte[] merge(byte[] a1, int a1Size, byte [] a2, int a2Size) {
+    	if(a1==null && a2 ==null) return null;
+    	if(a1==null) { byte [] merge = new byte[a2Size]; for(int j=0; j < a2Size;j++) {merge[j] = a2[j]; }   return merge; }
+    	if(a2==null) { byte [] merge = new byte[a1Size]; for(int j=0; j < a1Size;j++) {merge[j] = a1[j]; }   return merge; }
+    	byte [] merge = new byte[a1Size + a2Size];
     	int i = 0;
-    	for(; i < a1Size; i++) {all[i] = a1[i];}
-    	for(int j=0; j < a2Size; j++, i++) {all[i] = a2[j]; }
-    	return all;
+    	for(; i < a1Size; i++) {merge[i] = a1[i];}
+    	for(int j=0; j < a2Size;) {merge[i++] = a2[j++]; }
+    	return merge;
     }
     
     
@@ -806,6 +831,8 @@ public class GEEngineUtils {
     	System.out.println(printRawDataNames(data).toString());
     	byte [] b = serializeData(data.getRowData());
     	System.out.println(b.length + "  End...");*/
+    	
+    	IGEEngine e =  ENCRYPT_DECRYPT.createEngine(new FileInputStream(new File("C:\\Users\\Lubo\\Desktop\\eng.eng")), null, null);
     	
     	List<byte []> datad= new ArrayList<byte[]>();
     	datad.add(ByteArrays.en);
