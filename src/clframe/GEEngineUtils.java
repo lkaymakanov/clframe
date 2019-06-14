@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeSet;
 
 
 /**
@@ -30,6 +32,39 @@ public class GEEngineUtils {
 	private static Map<String, IGEEngineData> engines = new HashMap<String, IGEEngineData>();
 	private static Map<String, ILog>  loggers = new HashMap<String, ILog>();
 	private static String loggerName = "none";
+	
+	/***
+	 * Adding encrypted stream support!!!
+	 * @author Lubo
+	 *
+	 */
+	public static class ENCRYPT_DECRYPT{
+		
+		/**
+		 * 
+		 * @param is
+		 * @param key
+		 * @param algorithm
+		 * @param offset
+		 * @return
+		 * @throws IOException
+		 */
+		public static  IGEEngine createEngine(InputStream is, Key key, String algorithm, int offset) throws IOException {
+			return GEEngineUtils.createEngine(EncryptedInputStream.getEncryptedInputStream(is, key, algorithm, ENCRYPT_MODE.DECRYPT), offset);
+		}
+		
+		/***
+		 * Creates engine from an encrypted input stream
+		 * @param is
+		 * @param key
+		 * @param algorithm
+		 * @return
+		 * @throws IOException
+		 */
+		public static  IGEEngine createEngine(InputStream is, Key key, String algorithm) throws IOException {
+			return GEEngineUtils.createEngine(EncryptedInputStream.getEncryptedInputStream(is, key, algorithm, ENCRYPT_MODE.DECRYPT), 0);
+		}
+	}
 	
 	static {
 		loggers.put("sysout", new SysOut());
@@ -174,6 +209,67 @@ public class GEEngineUtils {
     
     
     /***
+     *  Creates an engine from engine content passed as Inputstream... 
+     * @param is
+     * @param offset
+     * @param pass
+     * @return
+     * @throws IOException 
+     */
+    public static  IGEEngine createEngine(InputStream is, int offset, String pass) throws IOException {
+    	int size = 1024*1024;
+    	byte [] b = new byte[size];
+    	byte [] engine = null;
+    	int i = 0;
+    	while((i = is.read(b, offset, size)) > 0) {
+    		engine = merge(engine, (engine == null ? 0: engine.length), b, i);
+    	}
+    	return createEngine(engine, offset, pass);
+    }
+    
+    
+    
+    
+    /***
+     *  Creates an engine from engine content passed as Inputstream...
+     * @param is
+     * @param offset
+     * @return
+     * @throws IOException 
+     */
+    public static  IGEEngine createEngine(InputStream is, int offset) throws IOException {
+    	return createEngine(is, offset, null);
+    }
+    
+    /***
+     *  Creates an engine from engine content passed as Inputstream...
+     * @param is
+     * @return
+     * @throws IOException 
+     */
+    public static  IGEEngine createEngine(InputStream is) throws IOException {
+    	return createEngine(is, 0);
+    }
+    
+    
+    /***
+     * merge 2 byte  arrays..
+     * @param a1
+     * @param a2
+     * @return
+     */
+    private static byte[] merge(byte[] a1, int a1Size, byte [] a2, int a2Size) {
+    	if(a1==null) return a2;
+    	if(a2==null) return a1;
+    	byte [] all = new byte[a1Size + a2Size];
+    	int i = 0;
+    	for(; i < a1Size; i++) {all[i] = a1[i];}
+    	for(int j=0; j < a2Size; j++, i++) {all[i] = a2[j]; }
+    	return all;
+    }
+    
+    
+    /***
      * *Unregisters an engine and calls the engine unload method!!!
      * @param engineName
      */
@@ -235,6 +331,23 @@ public class GEEngineUtils {
  			throw new RuntimeException(e);
  		}
     }
+    
+    /**
+     * Load all classes in IGEEngineData.
+     * @param data
+     * @throws ClassNotFoundException
+     */
+	private static void loadClasses(IGEEngineData data) throws ClassNotFoundException {
+		 if(data == null) return;
+		 for(String s : data.getClassMap().keySet()) {
+			 int cIndex =  s.indexOf(".class");
+			 String className = s.substring(0, cIndex);
+			 System.out.println(className);
+			 ((GEEngineCl)data.getEngineClassLoader()).findClass(className);
+		 }
+	}
+	
+
     
     /***
      * Creates engine by the the class  name of the class located in the source files in the application itself!!!
@@ -361,7 +474,13 @@ public class GEEngineUtils {
      * @return
      */
     public static Set<String> getEngineNames(){
-    	return engines.keySet();
+    	Set<String > s = new TreeSet<String>();
+    	synchronized (engines) {
+			for(String n : engines.keySet()) {
+				s.add(n);
+			}
+		}
+    	return s;
     }
     
     /***
@@ -691,16 +810,34 @@ public class GEEngineUtils {
     	datad.add(ByteArrays.en);
     	datad.add(ByteArrays.enf);
     	datad.add(ByteArrays.def);
-    	ClassLoader ld = getClassLoader(datad, null); 
+    	ClassLoader ld = getClassLoader(datad, null);
+    	
+    	
     	
     	//getE
+    	IGEEngineData data = loadEngineData(new File("D:\\dblib5315.jar"), 0, 1024*1024, null );
     	
-    	IGEEngineData data = loadEngineData(new File("C:\\Users\\Lubo\\Desktop\\jd-gui-windows-1.4.0\\kse-532\\myjar.jar"), 10, 1024*1024, null);
+    	/*IGEEngineData data = loadEngineData(new File("C:\\Users\\Lubo\\Desktop\\jd-gui-windows-1.4.0\\kse-532\\myjar.jar"), 10, 1024*1024, null);
     	System.out.println(printResourcesNames(data));
-    	System.out.println(printClassesNames(data));
+    	System.out.println(printClassesNames(data));*/
+    	
+    	//loadClasses(data);
+    	
+    	ClassLoader cl = data.getEngineClassLoader();
+    	
+    	Class c  =  Class.forName("net.is_bg.ltf.db.common.SqlLogFileReader$FileBuffer", true, cl);
+    	Class c1 =  Class.forName("net.is_bg.ltf.db.common.SqlLogFileReader$TokenProcessor", true, cl);
+    	Class c2 =  Class.forName("net.is_bg.ltf.db.common.DBConfig", true, cl);
+    	Class c3 =  Class.forName("net.is_bg.ltf.db.common.DBConfig", true, cl);
+    	
+    	
+    	c  =  Class.forName("net.is_bg.ltf.db.common.SqlLogFileReader$FileBuffer", true, cl);
+    	c1 =  Class.forName("net.is_bg.ltf.db.common.SqlLogFileReader$TokenProcessor", true, cl);
+    	c2 =  Class.forName("net.is_bg.ltf.db.common.DBConfig", true, cl);
+    	c3 =  Class.forName("net.is_bg.ltf.db.common.DBConfig", true, cl);
     	
     	setLoggerName("sysout");
-    	new GEEngineFileExporter("", data).exportEngineData();
+    	//new GEEngineFileExporter("", data).exportEngineData();
     	
     	//exportClasses(null, data);
     	
