@@ -32,6 +32,7 @@ public class GEEngineUtils {
 	private static Map<String, IGEEngineData> engines = new HashMap<String, IGEEngineData>();
 	private static Map<String, ILog>  loggers = new HashMap<String, ILog>();
 	private static String loggerName = "none";
+	private static final int ONE_MBYTE = 1024*1024;
 	
 	/***
 	 * Adding encrypted stream support!!!
@@ -54,7 +55,7 @@ public class GEEngineUtils {
 		}
 		
 		/***
-		 * Creates engine from an encrypted input stream
+		 * Creates engine from an encrypted input stream!!!
 		 * @param is
 		 * @param key
 		 * @param algorithm
@@ -168,7 +169,7 @@ public class GEEngineUtils {
      * @throws FileNotFoundException 
      */
     public static IGEEngine createEngine(File f, int offset,  String pass) throws FileNotFoundException{
-    	IGEEngineData data = loadEngineData(f, offset, 1024*1024, pass);
+    	IGEEngineData data = loadEngineData(f, offset, ONE_MBYTE, pass);
     	IGEEngineData e = null;
     	synchronized (engines) {
 			e = engines.get(getEngineName(data.getProperties()));
@@ -196,7 +197,7 @@ public class GEEngineUtils {
      * @return
      */
     public static IGEEngine createEngine(byte[] engine, int offset, String pass){
-    	IGEEngineData data = loadEngineData(engine, offset, 1024*1024, pass);
+    	IGEEngineData data = loadEngineData(engine, offset,ONE_MBYTE , pass);
     	IGEEngineData e=null;
     	synchronized (engines) {
 			e = engines.get(getEngineName(data.getProperties()));
@@ -217,7 +218,7 @@ public class GEEngineUtils {
      * @throws IOException 
      */
     public static  IGEEngine createEngine(InputStream is, int offset, String pass) throws IOException {
-    	int size = 1024*1024;
+    	int size = ONE_MBYTE;
     	byte [] b = new byte[size];
     	byte [] engine = null;
     	int i = 0;
@@ -815,7 +816,7 @@ public class GEEngineUtils {
     	
     	
     	//getE
-    	IGEEngineData data = loadEngineData(new File("D:\\dblib5315.jar"), 0, 1024*1024, null );
+    	IGEEngineData data = loadEngineData(new File("D:\\dblib5315.jar"), 0, ONE_MBYTE, null );
     	
     	/*IGEEngineData data = loadEngineData(new File("C:\\Users\\Lubo\\Desktop\\jd-gui-windows-1.4.0\\kse-532\\myjar.jar"), 10, 1024*1024, null);
     	System.out.println(printResourcesNames(data));

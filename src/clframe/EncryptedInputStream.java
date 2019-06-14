@@ -12,7 +12,7 @@ enum ENCRYPT_MODE{
 
 
 
-abstract class EncryptedInputStream  extends InputStream {
+class EncryptedInputStream  extends InputStream {
 	InputStream is;
 	
 	EncryptedInputStream(InputStream is){
@@ -21,11 +21,12 @@ abstract class EncryptedInputStream  extends InputStream {
 	
 	@Override
 	public int read() throws IOException {
-		return 0;
+		return is.read();
 	}
 	
+	
 	static EncryptedInputStream getEncryptedInputStream(InputStream is,  Key key, String algorithm, ENCRYPT_MODE mode) {
-		return null;
+		return new EncryptedInputStream(is);
 	}
 	
 }
