@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
@@ -22,6 +21,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
+import clframe.GEEngineUtils.ENCRYPT_DECRYPT.CIPHER_MODE;
+
 
 /**
  * A generic execution engine that will load classes and functionality at runtime!!!!
@@ -35,47 +36,63 @@ public class GEEngineUtils {
 	private static String loggerName = "none";
 	private static final int ONE_MBYTE = 1024*1024;
 	
+	
 	/***
 	 * Adding encrypted stream support!!!
 	 * @author Lubo
 	 *
 	 */
 	public static class ENCRYPT_DECRYPT{
-		/**
-		 * Creates engine from an encrypted input stream!!!
-		 * @param is
-		 * @param key
-		 * @param algorithm
-		 * @param offset
-		 * @return
-		 * @throws IOException
-		 */
-		public static  IGEEngine createEngine(CeaserCipherInputStream cis,  int offset) throws IOException {
-			return GEEngineUtils.createEngine(cis, offset);
-		}
 		
-		/***
-		 * Creates engine from an encrypted input stream!!!
-		 * @param is
-		 * @param key
-		 * @param algorithm
-		 * @return
-		 * @throws IOException
-		 */
-		public static  IGEEngine createEngine(CeaserCipherInputStream cis) throws IOException {
-			return createEngine(cis,  0);
+		public enum CIPHER_MODE{
+			ENCRYPT,
+			DECRYPT,
 		}
+				
 		
-		/***
-		 * Creates input stream for encryption or decryption!!!
-		 * @param is
-		 * @param key
-		 * @param algorithm
-		 * @return
-		 * @throws IOException
-		 */
-		public static CeaserCipherInputStream createCeaserCipherInputStream(InputStream is, CeaserKey key, CIPHER_MODE mode) throws IOException {
-			return CeaserCipherInputStream.createCeaserCipherInputStream(is, key, mode);
+		public static class CEASER {
+			/***
+			 * Creates input stream for encryption or decryption!!!
+			 * @param is
+			 * @param key
+			 * @param algorithm
+			 * @return
+			 * @throws IOException
+			 */
+			public static CeaserCipherInputStream createCeaserCipherInputStream(InputStream is, Key key, CIPHER_MODE mode) throws IOException {
+				return CeaserCipherInputStream.createCeaserCipherInputStream(is, key, mode);
+			}
+			
+			/**
+			 * Creates engine from an encrypted input stream!!!
+			 * @param is
+			 * @param key
+			 * @param algorithm
+			 * @param offset
+			 * @return
+			 * @throws IOException
+			 */
+			public static  IGEEngine createEngine(CeaserCipherInputStream cis,  int offset) throws IOException {
+				return GEEngineUtils.createEngine(cis, offset);
+			}
+			
+			/***
+			 * Creates engine from an encrypted input stream!!!
+			 * @param is
+			 * @param key
+			 * @param algorithm
+			 * @return
+			 * @throws IOException
+			 */
+			public static  IGEEngine createEngine(CeaserCipherInputStream cis) throws IOException {
+				return createEngine(cis,  0);
+			}
+			
+			/**Creates a ceaser key fo password*/
+			public static Key createCeaserKey(String pass) {
+				return CeaserKey.createCeaserKey(pass);
+			}
+			
 		}
 		
 	}
@@ -231,29 +248,9 @@ public class GEEngineUtils {
      * @throws IOException 
      */
     public static  IGEEngine createEngine(InputStream is, int offset, String pass) throws IOException {
-    	return createEngine(toByteArray(is), offset, pass);
+    	return createEngine(StreamUtils.toByteArray(is), offset, pass);
     }
     
-    
-    
-    /**
-     * Converts inputStream to byte array!!
-     * @param is
-     * @return
-     * @throws IOException
-     */
-    public static byte [] toByteArray(InputStream is) throws IOException {
-    	int size = ONE_MBYTE;
-    	byte [] b = new byte[size];
-    	byte [] engine = null;byte[] ba= null;
-    	int i = 0;
-    	while((i = is.read(b)) > 0) {
-    		ba = merge(engine, (engine == null ? 0: engine.length), b, i);
-    		engine = ba;
-    	}
-    	is.close();
-		return engine;
-    }
     
     
     /***
@@ -278,22 +275,7 @@ public class GEEngineUtils {
     }
     
     
-    /***
-     * merge 2 byte  arrays..
-     * @param a1
-     * @param a2
-     * @return
-     */
-    public static byte[] merge(byte[] a1, int a1Size, byte [] a2, int a2Size) {
-    	if(a1==null && a2 ==null) return null;
-    	if(a1==null) { byte [] merge = new byte[a2Size]; for(int j=0; j < a2Size;j++) {merge[j] = a2[j]; }   return merge; }
-    	if(a2==null) { byte [] merge = new byte[a1Size]; for(int j=0; j < a1Size;j++) {merge[j] = a1[j]; }   return merge; }
-    	byte [] merge = new byte[a1Size + a2Size];
-    	int i = 0;
-    	for(; i < a1Size; i++) {merge[i] = a1[i];}
-    	for(int j=0; j < a2Size;) {merge[i++] = a2[j++]; }
-    	return merge;
-    }
+    
     
     
     /***
@@ -833,20 +815,7 @@ public class GEEngineUtils {
     	System.out.println(b.length + "  End...");*/
     	
     	
-    	//============== encrypt / decrypt tests ==========================
-    	CeaserCipherInputStream is = null;
-    	//create encrypted stream for ceaser key 
-    	is = CeaserCipherInputStream.createCeaserCipherInputStream(new FileInputStream(new File("C:\\Users\\Lubo\\Desktop\\eng.eng")), CeaserKey.createCeaserKey("mypass"), CIPHER_MODE.ENCRYPT);
-    	//is.close();
-    	ENCRYPT_DECRYPT.createEngine(CeaserCipherInputStream.createCeaserCipherInputStream(is , CeaserKey.createCeaserKey("mypass"), CIPHER_MODE.DECRYPT), 0);
     	
-    	/*
-    	is = EncryptedInputStream.createCipherInputStream(new FileInputStream(new File("C:\\Users\\Lubo\\Desktop\\fileen.file")), CeaserKey.createCeaserKey("mypass"), ENCRYPT_MODE.DECRYPT);
-        encbytes =  toByteArray(is);
-    	fos = new FileOutputStream("C:\\Users\\Lubo\\Desktop\\filede.file");
-    	fos.write(encbytes);
-    	fos.close();
-    	*/
 
     	//============== encrypt / decrypt tests end ==========================
     	

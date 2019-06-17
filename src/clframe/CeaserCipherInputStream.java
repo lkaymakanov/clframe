@@ -2,12 +2,12 @@ package clframe;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Key;
 
 
-enum CIPHER_MODE{
-	ENCRYPT,
-	DECRYPT,
-}
+import clframe.GEEngineUtils.ENCRYPT_DECRYPT.CIPHER_MODE;
+
+
 
 
 /***
@@ -17,7 +17,7 @@ enum CIPHER_MODE{
  */
 class CeaserCipherInputStream  extends CipherInputStream  {
 	
-	private CeaserCipherInputStream(InputStream is, CeaserKey key, CIPHER_MODE mode) throws IOException {
+	private CeaserCipherInputStream(InputStream is, Key key, CIPHER_MODE mode) throws IOException {
 		super(is, key, mode);
 	}
 	
@@ -25,6 +25,7 @@ class CeaserCipherInputStream  extends CipherInputStream  {
 	/**Encrypts or decrypts byte array based on mode*/
 	protected byte [] encryptDecrpyt(byte[] bytes) {
 		//do nothing for now
+		if(key instanceof CeaserKey) throw new RuntimeException("Key must  be an instance of Ceaser key....");
 		CeaserKey  k = (CeaserKey)key;
 		if(mode == CIPHER_MODE.ENCRYPT) {return  k.encode(bytes);}
 		else {return  k.decode(bytes);}
@@ -34,7 +35,7 @@ class CeaserCipherInputStream  extends CipherInputStream  {
 	/***
 	 * Static factory method!!!
 	 */
-	static CeaserCipherInputStream createCeaserCipherInputStream(InputStream is,  CeaserKey key,  CIPHER_MODE mode) throws IOException {
+	static CeaserCipherInputStream createCeaserCipherInputStream(InputStream is,  Key key,  CIPHER_MODE mode) throws IOException {
 		return new CeaserCipherInputStream(is, key, mode);
 	}
 }

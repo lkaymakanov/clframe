@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.Key;
 
+import clframe.GEEngineUtils.ENCRYPT_DECRYPT.CIPHER_MODE;
+
 abstract class CipherInputStream extends InputStream {
 	private InputStream is;  //the wrapped istream
 	private byte [] bytes;  
@@ -22,7 +24,7 @@ abstract class CipherInputStream extends InputStream {
 	public int read() throws IOException {
 		if(bis == null) {
 			//convert stream to byte array
-			bytes = GEEngineUtils.toByteArray(is);
+			bytes = StreamUtils.toByteArray(is);
 			
 			//encrypt decrypt byte array based on mode
 			bytes = encryptDecrpyt(bytes);

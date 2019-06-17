@@ -39,6 +39,7 @@ class CeaserKey implements Key {
 	static CeaserKey createCeaserKey(String p) {
 		CeaserKey k =  new  CeaserKey();
 		k.encdec = new CeaserEncoderDecoder(p);
+		k.pass = p;
 		return k;
 	}
 	
