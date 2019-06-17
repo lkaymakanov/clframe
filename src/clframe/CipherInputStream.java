@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.security.Key;
 
 
-enum ENCRYPT_MODE{
+enum CIPHER_MODE{
 	ENCRYPT,
 	DECRYPT,
 }
@@ -17,13 +17,17 @@ enum ENCRYPT_MODE{
  * @author Lubo
  *
  */
-class EncryptedInputStream  extends InputStream {
+class CipherInputStream  extends InputStream {
 	private InputStream is;  //the wrapped istream
 	private byte [] bytes;  
 	private ByteArrayInputStream bis;
+	private Key key;
+	private CIPHER_MODE mode;
 	
-	EncryptedInputStream(InputStream is) throws IOException{
+	CipherInputStream(InputStream is, Key key, CIPHER_MODE mode) throws IOException{
 		this.is = is;
+		this.key = key;
+		this.mode = mode;
 	}
 	
 	@Override
@@ -44,13 +48,18 @@ class EncryptedInputStream  extends InputStream {
 	/**Encrypts or decrypts byte array based on mode*/
 	private void encryptDecrpyt() {
 		//do nothing for now
+		if(key instanceof CeaserKey ) {
+			CeaserKey  k = (CeaserKey)key;
+			if(mode == CIPHER_MODE.ENCRYPT) {bytes = k.encode(bytes);}
+			else {bytes = k.decode(bytes);}
+		}
 	}
 	
 	
 	/***
 	 * Static factory method!!!
 	 */
-	static EncryptedInputStream getEncryptedInputStream(InputStream is,  Key key, String algorithm, ENCRYPT_MODE mode) throws IOException {
-		return new EncryptedInputStream(is);
+	static CipherInputStream createCipherInputStream(InputStream is,  Key key,  CIPHER_MODE mode) throws IOException {
+		return new CipherInputStream(is, key, mode);
 	}
 }

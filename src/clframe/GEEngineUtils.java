@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
@@ -49,8 +50,8 @@ public class GEEngineUtils {
 		 * @return
 		 * @throws IOException
 		 */
-		public static  IGEEngine createEngine(InputStream is, Key key, String algorithm, int offset) throws IOException {
-			return GEEngineUtils.createEngine(EncryptedInputStream.getEncryptedInputStream(is, key, algorithm, ENCRYPT_MODE.DECRYPT), offset);
+		public static  IGEEngine createEngine(InputStream is, Key key,  int offset) throws IOException {
+			return GEEngineUtils.createEngine(CipherInputStream.createCipherInputStream(is, key,  CIPHER_MODE.DECRYPT), offset);
 		}
 		
 		/***
@@ -61,8 +62,8 @@ public class GEEngineUtils {
 		 * @return
 		 * @throws IOException
 		 */
-		public static  IGEEngine createEngine(InputStream is, Key key, String algorithm) throws IOException {
-			return GEEngineUtils.createEngine(EncryptedInputStream.getEncryptedInputStream(is, key, algorithm, ENCRYPT_MODE.DECRYPT), 0);
+		public static  IGEEngine createEngine(InputStream is, Key key) throws IOException {
+			return createEngine(is, key,  0);
 		}
 		
 		/***
@@ -73,8 +74,8 @@ public class GEEngineUtils {
 		 * @return
 		 * @throws IOException
 		 */
-		public static InputStream getEncryptedInputStream(InputStream is, Key key, String algorithm, ENCRYPT_MODE mode) throws IOException {
-			return EncryptedInputStream.getEncryptedInputStream(is, key, algorithm, mode);
+		public static InputStream getEncryptedInputStream(InputStream is, Key key, CIPHER_MODE mode) throws IOException {
+			return CipherInputStream.createCipherInputStream(is, key, mode);
 		}
 		
 	}
@@ -247,7 +248,7 @@ public class GEEngineUtils {
     	byte [] engine = null;byte[] ba= null;
     	int i = 0;
     	while((i = is.read(b)) > 0) {
-    		ba=  merge(engine, (engine == null ? 0: engine.length), b, i);
+    		ba = merge(engine, (engine == null ? 0: engine.length), b, i);
     		engine = ba;
     	}
     	is.close();
@@ -321,7 +322,6 @@ public class GEEngineUtils {
     	try {
 			engine = (IGEEngine)data.getEngineClassLoader().loadClass(getEngineName(data.getProperties())).newInstance();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		} 
@@ -832,7 +832,23 @@ public class GEEngineUtils {
     	byte [] b = serializeData(data.getRowData());
     	System.out.println(b.length + "  End...");*/
     	
-    	IGEEngine e =  ENCRYPT_DECRYPT.createEngine(new FileInputStream(new File("C:\\Users\\Lubo\\Desktop\\eng.eng")), null, null);
+    	
+    	//============== encrypt / decrypt tests ==========================
+    	CipherInputStream is = null;
+    	//create encrypted stream for ceaser key 
+    	is = CipherInputStream.createCipherInputStream(new FileInputStream(new File("C:\\Users\\Lubo\\Desktop\\file.file")), CeaserKey.createCeaserKey("mypass"), CIPHER_MODE.ENCRYPT);
+    	//is.close();
+    	ENCRYPT_DECRYPT.createEngine(is, CeaserKey.createCeaserKey("mypass"));
+    	
+    	/*
+    	is = EncryptedInputStream.createCipherInputStream(new FileInputStream(new File("C:\\Users\\Lubo\\Desktop\\fileen.file")), CeaserKey.createCeaserKey("mypass"), ENCRYPT_MODE.DECRYPT);
+        encbytes =  toByteArray(is);
+    	fos = new FileOutputStream("C:\\Users\\Lubo\\Desktop\\filede.file");
+    	fos.write(encbytes);
+    	fos.close();
+    	*/
+
+    	//============== encrypt / decrypt tests end ==========================
     	
     	List<byte []> datad= new ArrayList<byte[]>();
     	datad.add(ByteArrays.en);
@@ -871,7 +887,7 @@ public class GEEngineUtils {
     	
     	
     	//test loading jar files
-    	//IGEEngineData denc = loadEngineData(new File("C:\\Users\\lubo\\Desktop\\gee\\deng.eng"), 1024*1024, "geengine");
+    	//IGEEngineData denc = loadEngineData(new File("C:\\Users\\lubo\\Desktop\\gee\\deng.eng"), 1024*1024, "pass");
     	//IGEEngineData noen = loadEngineData(new File("C:\\Users\\lubo\\Desktop\\gee\\eng.eng"), 1024*1024, null);
     	/*
     	System.out.println(printClassesNames(denc));

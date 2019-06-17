@@ -2,11 +2,11 @@ package clframe;
 
 
 /**
- * 
+ * Ceaser encoder decoder!!!
  * @author lubo
  *
  */
-class SimpleOffsetEncoderDecoder {
+class CeaserEncoderDecoder {
 	private static String defaultAlphabet = " ./\\~!@#$%^&*()_+{}[];:|',\"_1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	private int [] offsets;
 	private String alphabet;
@@ -18,7 +18,7 @@ class SimpleOffsetEncoderDecoder {
 	 * @param alphabet
 	 * @param passPhrase
 	 */
-	SimpleOffsetEncoderDecoder(String alphabet, String passPhrase){
+	CeaserEncoderDecoder(String alphabet, String passPhrase){
 		this(alphabet, passPhrase, passPhrase.length());
 	}
 	
@@ -27,12 +27,12 @@ class SimpleOffsetEncoderDecoder {
 	 * Creates SimpleOffsetEncoderDecoder by  pass phrase!!!
 	 * @param passPhrase
 	 */
-	SimpleOffsetEncoderDecoder(String passPhrase){
+	CeaserEncoderDecoder(String passPhrase){
 		this(defaultAlphabet, passPhrase, passPhrase.length());
 	}
 	
 	
-	private SimpleOffsetEncoderDecoder(String alphabet, String passPhrase, int scrambleFactor){
+	private CeaserEncoderDecoder(String alphabet, String passPhrase, int scrambleFactor){
 		this.alphabet = alphabet;
 		this.scrableFactor = scrambleFactor;
 		this.length = alphabet.length();
