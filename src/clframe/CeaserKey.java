@@ -1,5 +1,6 @@
 package clframe;
 
+import java.io.UnsupportedEncodingException;
 import java.security.Key;
 
 /***
@@ -14,6 +15,7 @@ class CeaserKey implements Key {
 	 */
 	private static final long serialVersionUID = 890328104370616991L;
 	private CeaserEncoderDecoder encdec;
+	private String pass;
 
 	@Override
 	public String getAlgorithm() {
@@ -27,10 +29,14 @@ class CeaserKey implements Key {
 
 	@Override
 	public byte[] getEncoded() {
-		return null;
+		try {
+			return pass ==  null? null : pass.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
-	static Key createCeaserKey(String p) {
+	static CeaserKey createCeaserKey(String p) {
 		CeaserKey k =  new  CeaserKey();
 		k.encdec = new CeaserEncoderDecoder(p);
 		return k;

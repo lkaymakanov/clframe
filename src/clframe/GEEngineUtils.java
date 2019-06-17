@@ -50,8 +50,8 @@ public class GEEngineUtils {
 		 * @return
 		 * @throws IOException
 		 */
-		public static  IGEEngine createEngine(InputStream is, Key key,  int offset) throws IOException {
-			return GEEngineUtils.createEngine(CipherInputStream.createCipherInputStream(is, key,  CIPHER_MODE.DECRYPT), offset);
+		public static  IGEEngine createEngine(CeaserCipherInputStream cis,  int offset) throws IOException {
+			return GEEngineUtils.createEngine(cis, offset);
 		}
 		
 		/***
@@ -62,8 +62,8 @@ public class GEEngineUtils {
 		 * @return
 		 * @throws IOException
 		 */
-		public static  IGEEngine createEngine(InputStream is, Key key) throws IOException {
-			return createEngine(is, key,  0);
+		public static  IGEEngine createEngine(CeaserCipherInputStream cis) throws IOException {
+			return createEngine(cis,  0);
 		}
 		
 		/***
@@ -74,8 +74,8 @@ public class GEEngineUtils {
 		 * @return
 		 * @throws IOException
 		 */
-		public static InputStream getEncryptedInputStream(InputStream is, Key key, CIPHER_MODE mode) throws IOException {
-			return CipherInputStream.createCipherInputStream(is, key, mode);
+		public static CeaserCipherInputStream createCeaserCipherInputStream(InputStream is, CeaserKey key, CIPHER_MODE mode) throws IOException {
+			return CeaserCipherInputStream.createCeaserCipherInputStream(is, key, mode);
 		}
 		
 	}
@@ -834,11 +834,11 @@ public class GEEngineUtils {
     	
     	
     	//============== encrypt / decrypt tests ==========================
-    	CipherInputStream is = null;
+    	CeaserCipherInputStream is = null;
     	//create encrypted stream for ceaser key 
-    	is = CipherInputStream.createCipherInputStream(new FileInputStream(new File("C:\\Users\\Lubo\\Desktop\\file.file")), CeaserKey.createCeaserKey("mypass"), CIPHER_MODE.ENCRYPT);
+    	is = CeaserCipherInputStream.createCeaserCipherInputStream(new FileInputStream(new File("C:\\Users\\Lubo\\Desktop\\eng.eng")), CeaserKey.createCeaserKey("mypass"), CIPHER_MODE.ENCRYPT);
     	//is.close();
-    	ENCRYPT_DECRYPT.createEngine(is, CeaserKey.createCeaserKey("mypass"));
+    	ENCRYPT_DECRYPT.createEngine(CeaserCipherInputStream.createCeaserCipherInputStream(is , CeaserKey.createCeaserKey("mypass"), CIPHER_MODE.DECRYPT), 0);
     	
     	/*
     	is = EncryptedInputStream.createCipherInputStream(new FileInputStream(new File("C:\\Users\\Lubo\\Desktop\\fileen.file")), CeaserKey.createCeaserKey("mypass"), ENCRYPT_MODE.DECRYPT);
