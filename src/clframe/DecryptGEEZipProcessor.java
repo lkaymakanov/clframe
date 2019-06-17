@@ -3,6 +3,8 @@ package clframe;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -99,11 +101,15 @@ class DecryptGEEZipProcessor extends GEERawZipProcessor  {
 				GEEngineUtils.log("Adding to class data  " + decodedEntryName);
 				geeZipProcessor.outData.getClassMap().put(dottedEntryName, new ClassInfo(rawBytesDecoded,FileNamePath.fromFileNamePath(decodedEntryName),FileNamePath.fromFileNamePath(entryName)));
 			}else{
+				if(geeZipProcessor.outData.getProperties() == null)geeZipProcessor.outData.setProperties(new HashMap<String, Properties>());
 				//load resource file
 				if(decodedEntryName.equals(ClFrameConst.ENGINE_PROP_FILE_NAME)){
 	            	//read properties
 	            	ByteArrayInputStream ins = new ByteArrayInputStream(rawBytesDecoded);
-	            	geeZipProcessor.outData.setProperties(Utils.loadproperties(ins));
+	            	geeZipProcessor.outData.getProperties().put(ClFrameConst.ENGINE_PROP_FILE_NAME, (Utils.loadproperties(ins)));
+	            }else if(decodedEntryName.endsWith(".properties")) {
+	            	ByteArrayInputStream ins = new ByteArrayInputStream(rawBytesDecoded);
+	            	geeZipProcessor.outData.getProperties().put(decodedEntryName, (Utils.loadproperties(ins)));
 	            }
 				GEEngineUtils.log("Adding to resource data  " + decodedEntryName);
 				geeZipProcessor.outData.getResources().put(dottedEntryName, new ResourceInfo(rawBytesDecoded,FileNamePath.fromFileNamePath(decodedEntryName), FileNamePath.fromFileNamePath(entryName)));

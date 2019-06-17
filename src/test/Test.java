@@ -16,7 +16,7 @@ public class Test {
     	//create encrypted stream for ceaser key 
     	is = ENCRYPT_DECRYPT.CEASER.createCeaserCipherInputStream(new FileInputStream(new File("C:\\Users\\Lubo\\Desktop\\eng.eng")), ENCRYPT_DECRYPT.CEASER.createCeaserKey("mypass"), CIPHER_MODE.ENCRYPT);
     	//is.close();
-    	ENCRYPT_DECRYPT.CEASER.createEngine(ENCRYPT_DECRYPT.CEASER.createCeaserCipherInputStream(is , ENCRYPT_DECRYPT.CEASER.createCeaserKey("mypass"), CIPHER_MODE.DECRYPT), 0);
+    	ENCRYPT_DECRYPT.CEASER.createEngine(ENCRYPT_DECRYPT.CEASER.createCeaserCipherInputStream(is, ENCRYPT_DECRYPT.CEASER.createCeaserKey("mypass"), CIPHER_MODE.DECRYPT), 0);
     	
     	/** wrtie to file 
     	is = EncryptedInputStream.createCipherInputStream(new FileInputStream(new File("C:\\Users\\Lubo\\Desktop\\fileen.file")), CeaserKey.createCeaserKey("mypass"), ENCRYPT_MODE.DECRYPT);

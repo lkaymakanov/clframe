@@ -13,10 +13,14 @@ class MapRawData implements IMapRawData {
 	
 	@Override
 	public Map<String, RawData> getRawData() {
-		// TODO Auto-generated method stub
 		return map;
 	}
-	
-	
+
+
+	@Override
+	public void setRowData(Map<String, RawData> rowData) {
+		map = rowData;
+		
+	}
 
 }

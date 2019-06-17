@@ -1,20 +1,18 @@
 package clframe;
 
-import java.util.Map;
 import java.util.Properties;
 
-
-interface IGEEngineData extends IMapRawData{
-	 Map<String, ClassInfo> getClassMap();
+interface IGEEngineData extends IModule{
+	/* Map<String, ClassInfo> getClassMap();
 	 Map<String, ResourceInfo> getResources();
-	 Properties getProperties();
+	 Properties getProperties();*/
 	 ClassLoader getEngineClassLoader();
 	 IGEEngine getEnigine();
+	 Properties getEngineProperties();
 	 
-	 void setClassMap(Map<String, ClassInfo> m);
+	/* void setClassMap(Map<String, ClassInfo> m);
 	 void setResources(Map<String, ResourceInfo> r);
-	 void setProperties(Properties p);
+	 void setProperties(Properties p);*/
 	 void setEngineClassLoader(ClassLoader c);
 	 void setEnigine(IGEEngine e);
-	 void setRowData(Map<String, RawData> rowData);
 }

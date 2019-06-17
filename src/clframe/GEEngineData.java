@@ -17,7 +17,7 @@ class GEEngineData implements IGEEngineData{
 	private Map<String, ClassInfo> classMap = new Hashtable<String, ClassInfo>();
 	private Map<String, ResourceInfo> resources = new Hashtable<String, ResourceInfo>();
 	private Map<String, RawData> rawData = new Hashtable<String, RawData>();
-	private Properties properties;
+	private Map<String,Properties> properties;
 	private transient ClassLoader engineClassLoader;
 	private transient IGEEngine enigine;
 	
@@ -34,7 +34,7 @@ class GEEngineData implements IGEEngineData{
 		return resources;
 	}
 	@Override
-	public Properties getProperties() {
+	public Map<String, Properties> getProperties() {
 		return properties;
 	}
 	@Override
@@ -54,7 +54,7 @@ class GEEngineData implements IGEEngineData{
 		resources = r;
 	}
 	@Override
-	public void setProperties(Properties p) {
+	public void setProperties(Map<String,Properties> p) {
 		properties = p;
 	}
 	@Override
@@ -76,5 +76,9 @@ class GEEngineData implements IGEEngineData{
 		this.rawData = rowData;
 	}
 
+	@Override
+	public Properties getEngineProperties() {
+		return properties.get(ClFrameConst.ENGINE_PROP_FILE_NAME);
+	}
 	
 }

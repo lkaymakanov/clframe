@@ -6,12 +6,8 @@ import java.security.Key;
 
 
 import clframe.GEEngineUtils.ENCRYPT_DECRYPT.CIPHER_MODE;
-
-
-
-
 /***
- * Input stream wrapper that encrypt/decrypts the wrapped stream based on encryption mode mode!
+ * Input stream wrapper that encrypts/decrypts the wrapped stream based on encryption mode mode!
  * @author Lubo
  *
  */
@@ -25,7 +21,7 @@ class CeaserCipherInputStream  extends CipherInputStream  {
 	/**Encrypts or decrypts byte array based on mode*/
 	protected byte [] encryptDecrpyt(byte[] bytes) {
 		//do nothing for now
-		if(key instanceof CeaserKey) throw new RuntimeException("Key must  be an instance of Ceaser key....");
+		if(!(key instanceof CeaserKey)) throw new RuntimeException("Key must  be an instance of Ceaser key....");
 		CeaserKey  k = (CeaserKey)key;
 		if(mode == CIPHER_MODE.ENCRYPT) {return  k.encode(bytes);}
 		else {return  k.decode(bytes);}

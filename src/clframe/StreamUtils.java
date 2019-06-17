@@ -2,8 +2,11 @@ package clframe;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StreamUtils {
 	private static final int ONE_MBYTE = 1024*1024;
@@ -81,5 +84,34 @@ public class StreamUtils {
     	os.write(bytes);
     	os.close();
     	return os;
+    }
+    
+    
+    public static ByteArrayInputStream iFileIStreamToByteArrayInputStream(FileInputStream is, int offset) {
+    	List<Byte> fileBytes = new ArrayList<Byte>();
+    	try {
+			is.getChannel().position(offset);
+			int b = is.read();
+			while(b!=-1) {
+				fileBytes.add((byte)b);
+				b = is.read();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				is.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
+		}
+    	
+    	byte [] buffer = new byte[fileBytes.size()];
+    	int i = 0;
+    	for(Byte b: fileBytes) {
+    		buffer[i++] = b;
+    	}
+    	return new ByteArrayInputStream(buffer);
     }
 }

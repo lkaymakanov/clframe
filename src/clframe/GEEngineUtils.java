@@ -21,7 +21,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
-import clframe.GEEngineUtils.ENCRYPT_DECRYPT.CIPHER_MODE;
 
 
 /**
@@ -36,6 +35,9 @@ public class GEEngineUtils {
 	private static String loggerName = "none";
 	private static final int ONE_MBYTE = 1024*1024;
 	
+	public static class MODULES{
+		
+	}
 	
 	/***
 	 * Adding encrypted stream support!!!
@@ -44,7 +46,8 @@ public class GEEngineUtils {
 	 */
 	public static class ENCRYPT_DECRYPT{
 		
-		public enum CIPHER_MODE{
+		/**Encryption, decryption mode*/
+		public static enum CIPHER_MODE{
 			ENCRYPT,
 			DECRYPT,
 		}
@@ -160,6 +163,16 @@ public class GEEngineUtils {
     }
     
     /***
+     * Same as getEngine
+     * @param moduleName
+     * @return
+     */
+    public static IGEEngine getModule(String moduleName) {
+    	return getEngine(moduleName);
+    }
+    
+    
+    /***
      * Gets an engine name from engine properties!!!
      * @param p
      * @return
@@ -202,10 +215,10 @@ public class GEEngineUtils {
     	IGEEngineData data = loadEngineData(f, offset, ONE_MBYTE, pass);
     	IGEEngineData e = null;
     	synchronized (engines) {
-			e = engines.get(getEngineName(data.getProperties()));
+			e = engines.get(getEngineName(data.getEngineProperties()));
 			if(e!=null) return e.getEnigine();
 			data.setEnigine(createEngine(data));
-			engines.put(getEngineName(data.getProperties()), (data));
+			engines.put(getEngineName(data.getEngineProperties()), (data));
 		}
     	return data.getEnigine();
     }
@@ -230,10 +243,10 @@ public class GEEngineUtils {
     	IGEEngineData data = loadEngineData(engine, offset,ONE_MBYTE , pass);
     	IGEEngineData e=null;
     	synchronized (engines) {
-			e = engines.get(getEngineName(data.getProperties()));
+			e = engines.get(getEngineName(data.getEngineProperties()));
 			if(e!=null) return e.getEnigine();
 			data.setEnigine(createEngine(data));
-			engines.put(getEngineName(data.getProperties()), data);
+			engines.put(getEngineName(data.getEngineProperties()), data);
 		}
     	return data.getEnigine();
     }
@@ -302,7 +315,7 @@ public class GEEngineUtils {
     private static IGEEngine createEngine(IGEEngineData data){
     	IGEEngine engine=null;
     	try {
-			engine = (IGEEngine)data.getEngineClassLoader().loadClass(getEngineName(data.getProperties())).newInstance();
+			engine = (IGEEngine)data.getEngineClassLoader().loadClass(getEngineName(data.getEngineProperties())).newInstance();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
@@ -365,10 +378,10 @@ public class GEEngineUtils {
     	IGEEngineData data = loadEngineData(className);
     	IGEEngineData e=null;
     	synchronized (engines) {
-			e = engines.get(getEngineName(data.getProperties()));
+			e = engines.get(getEngineName(data.getEngineProperties()));
 			if(e!=null) return e.getEnigine();
 			data.setEnigine(createEngine(data));
-			engines.put(getEngineName(data.getProperties()), data);
+			engines.put(getEngineName(data.getEngineProperties()), data);
 		}
     	return data.getEnigine();
     }
@@ -403,8 +416,8 @@ public class GEEngineUtils {
     private static IGEEngineData loadEngineData(String className){
     	IGEEngineData data = new GEEngineData();
     	data.setEngineClassLoader( new GEEngineCl(data, null));
-    	data.setProperties( new Properties());
-    	data.getProperties().put(ClFrameConst.NAME, className);
+    	data.setProperties(new HashMap<String, Properties>());
+    	data.getEngineProperties().put(ClFrameConst.NAME, className);
 		data.getResources().put(ClFrameConst.ENGINE_PROP_FILE_NAME, new ResourceInfo("key=d55720e30d36024dbfa38b86c9d14077ecdf66699ee0444432249bf98844955df35f15985e6f290f6cd10b3f47382c0fec241c1dfba5692f3adb6b28a0a6852c".getBytes(),FileNamePath.fromFileNamePath("engine.properties"), FileNamePath.fromFileNamePath("originalResourceName")));
      	return data;
     }
@@ -436,33 +449,7 @@ public class GEEngineUtils {
     }
     
     
-    private static ByteArrayInputStream iFileIStreamToByteArrayInputStream(FileInputStream is, int offset) {
-    	List<Byte> fileBytes = new ArrayList<Byte>();
-    	try {
-			is.getChannel().position(offset);
-			int b = is.read();
-			while(b!=-1) {
-				fileBytes.add((byte)b);
-				b = is.read();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}finally {
-			try {
-				is.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-				throw new RuntimeException(e);
-			}
-		}
-    	
-    	byte [] buffer = new byte[fileBytes.size()];
-    	int i = 0;
-    	for(Byte b: fileBytes) {
-    		buffer[i++] = b;
-    	}
-    	return new ByteArrayInputStream(buffer);
-    }
+    
 
     /**
      * Loads from engine file into memory the data needed by the engine !!!
@@ -472,7 +459,7 @@ public class GEEngineUtils {
      * @throws FileNotFoundException 
      */
     private static IGEEngineData loadEngineData(File f, int offset, int bufferSize, String pass) throws FileNotFoundException{
-    	return loadEngineData(offset == 0 ? new FileInputStream(f) : iFileIStreamToByteArrayInputStream(new FileInputStream(f), offset),  bufferSize, pass);
+    	return loadEngineData(offset == 0 ? new FileInputStream(f) : StreamUtils.iFileIStreamToByteArrayInputStream(new FileInputStream(f), offset),  bufferSize, pass);
     }
     
     
@@ -567,7 +554,7 @@ public class GEEngineUtils {
     public static Enumeration<Object>  getEnginePropertyNames(String engineName){
     	IGEEngineData data = engines.get(engineName);
         if(data == null) return null;
-        return data.getProperties().keys();
+        return data.getEngineProperties().keys();
     }
     
     /***
