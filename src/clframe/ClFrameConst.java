@@ -8,5 +8,7 @@ public class ClFrameConst {
 
 	public static final Object NAME = "name";
 	
+	public static final String PROP_EXTENSION = ".properties";
+	
 	
 }

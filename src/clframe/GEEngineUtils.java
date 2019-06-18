@@ -35,8 +35,39 @@ public class GEEngineUtils {
 	private static String loggerName = "none";
 	private static final int ONE_MBYTE = 1024*1024;
 	
-	public static class MODULES{
+	/***
+	 * Loading modules namespace!
+	 * Used to load module data & create cl on that data!
+	 * @author Lubo
+	 *
+	 */
+	public static class MODULE {
 		
+		/**Loads a module from input stream */
+		public static IModuleHandle loadModule(InputStream is) {
+			return loadEngineData(is, ONE_MBYTE, null);
+		}
+		
+		/***
+		 * Creates a class loader for a module & parent class loader!!!
+		 * @param moduleHandle
+		 * @param parentCl
+		 * @return
+		 */
+		public static ClassLoader createClassLoader(IModuleHandle moduleHandle, ClassLoader parentCl) {
+			if(!(moduleHandle instanceof IModule)) throw new RuntimeException("Invalid module Handle...");
+			return new GEEngineCl((IModule)moduleHandle, parentCl);
+		}
+		
+		
+		/***
+		 * Gets Module handle for engine!!!
+		 * @param engineName
+		 * @return
+		 */
+		public static IModuleHandle getModuleHandle(String engineName) {
+			return engines.get(engineName);
+		}
 	}
 	
 	/***
@@ -91,11 +122,16 @@ public class GEEngineUtils {
 				return createEngine(cis,  0);
 			}
 			
-			/**Creates a ceaser key fo password*/
+			/**Creates a ceaser key for password*/
 			public static Key createCeaserKey(String pass) {
 				return CeaserKey.createCeaserKey(pass);
 			}
 			
+			
+			/**Creates a ceaser key for offsets*/
+			public static Key createCeaserKey(int [] off) {
+				return CeaserKey.createCeaserKey(off);
+			}
 		}
 		
 	}
@@ -192,6 +228,11 @@ public class GEEngineUtils {
     	return createEngine(f, 0);
     }
     
+    
+   /* public static ClassLoader createEngineClassLoader(ClassLoader parentcl) {
+    	return new GEEngineCl(data, parent);
+    }*/
+    
    /**
     * Creates an engine from engine File!!! 
     * If engine exists under that name the existing engine is returned!!! Otherwise registers & returns new IGEEngine!!! 
@@ -217,7 +258,7 @@ public class GEEngineUtils {
     	synchronized (engines) {
 			e = engines.get(getEngineName(data.getEngineProperties()));
 			if(e!=null) return e.getEnigine();
-			data.setEnigine(createEngine(data));
+			data.setEngine(createEngine(data));
 			engines.put(getEngineName(data.getEngineProperties()), (data));
 		}
     	return data.getEnigine();
@@ -245,7 +286,7 @@ public class GEEngineUtils {
     	synchronized (engines) {
 			e = engines.get(getEngineName(data.getEngineProperties()));
 			if(e!=null) return e.getEnigine();
-			data.setEnigine(createEngine(data));
+			data.setEngine(createEngine(data));
 			engines.put(getEngineName(data.getEngineProperties()), data);
 		}
     	return data.getEnigine();
@@ -315,6 +356,7 @@ public class GEEngineUtils {
     private static IGEEngine createEngine(IGEEngineData data){
     	IGEEngine engine=null;
     	try {
+    		initEngineClassLoader(data);
 			engine = (IGEEngine)data.getEngineClassLoader().loadClass(getEngineName(data.getEngineProperties())).newInstance();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -378,12 +420,19 @@ public class GEEngineUtils {
     	IGEEngineData data = loadEngineData(className);
     	IGEEngineData e=null;
     	synchronized (engines) {
+    		
 			e = engines.get(getEngineName(data.getEngineProperties()));
 			if(e!=null) return e.getEnigine();
-			data.setEnigine(createEngine(data));
+			data.setEngine(createEngine(data));
 			engines.put(getEngineName(data.getEngineProperties()), data);
 		}
     	return data.getEnigine();
+    }
+    
+    private static void initEngineClassLoader(IGEEngineData data) {
+    	if(data.getEngineClassLoader() == null) {
+    		data.setEngineClassLoader(new GEEngineCl(data, null));
+    	}
     }
     
     /***
@@ -415,7 +464,6 @@ public class GEEngineUtils {
      */
     private static IGEEngineData loadEngineData(String className){
     	IGEEngineData data = new GEEngineData();
-    	data.setEngineClassLoader( new GEEngineCl(data, null));
     	data.setProperties(new HashMap<String, Properties>());
     	data.getEngineProperties().put(ClFrameConst.NAME, className);
 		data.getResources().put(ClFrameConst.ENGINE_PROP_FILE_NAME, new ResourceInfo("key=d55720e30d36024dbfa38b86c9d14077ecdf66699ee0444432249bf98844955df35f15985e6f290f6cd10b3f47382c0fec241c1dfba5692f3adb6b28a0a6852c".getBytes(),FileNamePath.fromFileNamePath("engine.properties"), FileNamePath.fromFileNamePath("originalResourceName")));
@@ -444,7 +492,6 @@ public class GEEngineUtils {
     	DecryptGEEZipProcessor pr = new DecryptGEEZipProcessor(new GEERawZipProcessor(bufferSize), pass, bufferSize);   
     	ZipUtils.zipProcess(is, pr);
     	pr.decryptRawDataAndFillClassesResources();
-    	pr.outData.setEngineClassLoader(new GEEngineCl(pr.outData, null));
     	return pr.outData;
     }
     
@@ -461,6 +508,8 @@ public class GEEngineUtils {
     private static IGEEngineData loadEngineData(File f, int offset, int bufferSize, String pass) throws FileNotFoundException{
     	return loadEngineData(offset == 0 ? new FileInputStream(f) : StreamUtils.iFileIStreamToByteArrayInputStream(new FileInputStream(f), offset),  bufferSize, pass);
     }
+    
+    
     
     
     
@@ -707,7 +756,6 @@ public class GEEngineUtils {
      */
     private static IGEEngineData fromRawData(IMapRawData rawData, ClassLoader parent){
     	GEEngineData data = new GEEngineData();
-    	data.setEngineClassLoader(new GEEngineCl(data, parent));
     	data.setRowData(rawData.getRawData());
     	for(RawData rd: rawData.getRawData().values()){
     		FileNamePath fname = rd.getName();
@@ -747,6 +795,7 @@ public class GEEngineUtils {
     public static ClassLoader getClassLoader(List<byte []> data, ClassLoader parent) throws UnsupportedEncodingException{
     	IMapRawData  m = getRawDataForClassBytes(data);
     	IGEEngineData edata = fromRawData(m, parent);
+    	
     	return edata.getEngineClassLoader();
     }
     

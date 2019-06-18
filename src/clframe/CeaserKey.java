@@ -36,6 +36,12 @@ class CeaserKey implements Key {
 		}
 	}
 	
+	static CeaserKey createCeaserKey(int[] offset) {
+		CeaserKey k =  new  CeaserKey();
+		k.encdec = new CeaserEncoderDecoder(offset);
+		return k;
+	}  
+	
 	static CeaserKey createCeaserKey(String p) {
 		CeaserKey k =  new  CeaserKey();
 		k.encdec = new CeaserEncoderDecoder(p);

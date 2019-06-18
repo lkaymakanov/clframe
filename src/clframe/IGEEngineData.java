@@ -14,5 +14,5 @@ interface IGEEngineData extends IModule{
 	 void setResources(Map<String, ResourceInfo> r);
 	 void setProperties(Properties p);*/
 	 void setEngineClassLoader(ClassLoader c);
-	 void setEnigine(IGEEngine e);
+	 void setEngine(IGEEngine e);
 }

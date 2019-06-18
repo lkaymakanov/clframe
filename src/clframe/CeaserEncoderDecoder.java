@@ -32,11 +32,19 @@ class CeaserEncoderDecoder {
 	}
 	
 	
-	private CeaserEncoderDecoder(String alphabet, String passPhrase, int scrambleFactor){
+	CeaserEncoderDecoder(String alphabet, String passPhrase, int scrambleFactor){
+		this(alphabet, passPhraseToIntArray(alphabet, passPhrase), scrambleFactor);
+	}
+	
+	CeaserEncoderDecoder( int[] offsets){
+		this(defaultAlphabet, offsets,  10);
+	}
+	
+	private CeaserEncoderDecoder(String alphabet, int[] offsets, int scrambleFactor) {
 		this.alphabet = alphabet;
 		this.scrableFactor = scrambleFactor;
 		this.length = alphabet.length();
-		this.offsets = passPhraseToIntArray(this.alphabet, passPhrase);
+		this.offsets = offsets;
 		this.alphabet = scrambleAlphabet();
 	}
 	
@@ -78,7 +86,7 @@ class CeaserEncoderDecoder {
 	 * @param passPhrase
 	 * @return
 	 */
-	private int [] passPhraseToIntArray(String alphabet, String passPhrase){
+	private static int [] passPhraseToIntArray(String alphabet, String passPhrase){
 		int arr [] = new int [passPhrase.length()];
 		int aplhlength = alphabet.length();
 		for(int i = 0; i < passPhrase.length(); i++){

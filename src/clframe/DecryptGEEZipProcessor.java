@@ -90,6 +90,7 @@ class DecryptGEEZipProcessor extends GEERawZipProcessor  {
 	 *Gets the entries in outData.rowData decrypts if necessary & fills classes & resources
 	 */
 	void decryptRawDataAndFillClassesResources(){
+		if(geeZipProcessor.outData.getProperties() == null)geeZipProcessor.outData.setProperties(new HashMap<String, Properties>());
 		for(String entryName:geeZipProcessor.outData.getRawData().keySet()){
 			RawData raw = geeZipProcessor.outData.getRawData().get(entryName);
 			byte [] rawBytesDecoded = decrypt(raw.bytes);
@@ -101,13 +102,12 @@ class DecryptGEEZipProcessor extends GEERawZipProcessor  {
 				GEEngineUtils.log("Adding to class data  " + decodedEntryName);
 				geeZipProcessor.outData.getClassMap().put(dottedEntryName, new ClassInfo(rawBytesDecoded,FileNamePath.fromFileNamePath(decodedEntryName),FileNamePath.fromFileNamePath(entryName)));
 			}else{
-				if(geeZipProcessor.outData.getProperties() == null)geeZipProcessor.outData.setProperties(new HashMap<String, Properties>());
 				//load resource file
 				if(decodedEntryName.equals(ClFrameConst.ENGINE_PROP_FILE_NAME)){
 	            	//read properties
 	            	ByteArrayInputStream ins = new ByteArrayInputStream(rawBytesDecoded);
 	            	geeZipProcessor.outData.getProperties().put(ClFrameConst.ENGINE_PROP_FILE_NAME, (Utils.loadproperties(ins)));
-	            }else if(decodedEntryName.endsWith(".properties")) {
+	            }else if(decodedEntryName.endsWith(ClFrameConst.PROP_EXTENSION)) {
 	            	ByteArrayInputStream ins = new ByteArrayInputStream(rawBytesDecoded);
 	            	geeZipProcessor.outData.getProperties().put(decodedEntryName, (Utils.loadproperties(ins)));
 	            }

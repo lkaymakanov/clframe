@@ -62,7 +62,7 @@ class GEEngineData implements IGEEngineData{
 		engineClassLoader = c;
 	}
 	@Override
-	public void setEnigine(IGEEngine e) {
+	public void setEngine(IGEEngine e) {
 		enigine = e;
 	}
 
