@@ -9,6 +9,7 @@ import java.io.InputStream;
 import clframe.IModuleHandle;
 import clframe.GEEngineUtils.ENCRYPT_DECRYPT;
 import clframe.GEEngineUtils.ENCRYPT_DECRYPT.CIPHER_MODE;
+import clframe.GEEngineUtils.ENGINE;
 import clframe.GEEngineUtils.MODULE;
 
 public class Test {
@@ -25,7 +26,6 @@ public class Test {
     	
         ClassLoader cl = MODULE.createClassLoader(h, is.getClass().getClassLoader());
         Class c = 	cl.loadClass("appgeengine.engine.reports.ReportPage");
-        System.out.println(c.newInstance());
     	/** wrtie to file 
     	is = EncryptedInputStream.createCipherInputStream(new FileInputStream(new File("C:\\Users\\Lubo\\Desktop\\fileen.file")), CeaserKey.createCeaserKey("mypass"), ENCRYPT_MODE.DECRYPT);
         encbytes =  toByteArray(is);
@@ -33,6 +33,12 @@ public class Test {
     	fos.write(encbytes);
     	fos.close();
     	*/
+        
+        ENGINE.EngineBuilder bd = new ENGINE.EngineBuilder();
+        bd.setInputStream(new FileInputStream(new File("C:\\Users\\Lubo\\Desktop\\eng.eng")));
+        bd.setPass(null);
+        bd.setStreamOffset(0);
+        bd.build();
     	
     	//System.out.println("end test");
     	

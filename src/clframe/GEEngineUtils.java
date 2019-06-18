@@ -35,6 +35,10 @@ public class GEEngineUtils {
 	private static String loggerName = "none";
 	private static final int ONE_MBYTE = 1024*1024;
 	
+	static {
+		loggers.put("sysout", new SysOut());
+	}
+	
 	/***
 	 * Loading modules namespace!
 	 * Used to load module data & create cl on that data!
@@ -83,7 +87,11 @@ public class GEEngineUtils {
 			DECRYPT,
 		}
 				
-		
+		/***
+		 * Class that uses ceaser cipher input stream support!
+		 * @author Lubo
+		 *
+		 */
 		public static class CEASER {
 			/***
 			 * Creates input stream for encryption or decryption!!!
@@ -136,9 +144,32 @@ public class GEEngineUtils {
 		
 	}
 	
-	static {
-		loggers.put("sysout", new SysOut());
+	public static class ENGINE{
+		public static class EngineBuilder {
+			private InputStream is;
+			private int streamOffset;
+			private String pass;
+			
+			public EngineBuilder setInputStream(InputStream is) {
+				this.is = is;
+				return this;
+			}
+			public EngineBuilder setStreamOffset(int offset) {
+				this.streamOffset = offset;
+				return this;
+			}
+			public EngineBuilder setPass(String pass) {
+				this.pass = pass;
+				return this;
+			}
+			
+			public IGEEngine build() throws IOException {
+				return createEngine(is, streamOffset, pass);
+			}
+		}
 	}
+	
+	
 	
 	/**
 	 * Choosing the current logger by loggername!
@@ -198,14 +229,6 @@ public class GEEngineUtils {
     	}
     }
     
-    /***
-     * Same as getEngine
-     * @param moduleName
-     * @return
-     */
-    public static IGEEngine getModule(String moduleName) {
-    	return getEngine(moduleName);
-    }
     
     
     /***
@@ -229,9 +252,6 @@ public class GEEngineUtils {
     }
     
     
-   /* public static ClassLoader createEngineClassLoader(ClassLoader parentcl) {
-    	return new GEEngineCl(data, parent);
-    }*/
     
    /**
     * Creates an engine from engine File!!! 
@@ -281,7 +301,7 @@ public class GEEngineUtils {
      * @return
      */
     public static IGEEngine createEngine(byte[] engine, int offset, String pass){
-    	IGEEngineData data = loadEngineData(engine, offset,ONE_MBYTE , pass);
+    	IGEEngineData data = loadEngineData(engine, offset, ONE_MBYTE, pass);
     	IGEEngineData e=null;
     	synchronized (engines) {
 			e = engines.get(getEngineName(data.getEngineProperties()));
@@ -518,7 +538,21 @@ public class GEEngineUtils {
      * @return
      */
     public static Set<String> getEngineNames(){
-    	Set<String > s = new TreeSet<String>();
+    	Set<String> s = new TreeSet<String>();
+    	synchronized (engines) {
+			for(String n : engines.keySet()) {
+				s.add(n);
+			}
+		}
+    	return s;
+    }
+    
+    /***
+     * The  same as genEngineNames but returns list instead of set!
+     * @return
+     */
+    public static List<String> getEngineNamesList(){
+    	List<String> s = new ArrayList<String>();
     	synchronized (engines) {
 			for(String n : engines.keySet()) {
 				s.add(n);
