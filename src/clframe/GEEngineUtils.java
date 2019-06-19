@@ -884,8 +884,6 @@ public class GEEngineUtils {
     	byte [] b = serializeData(data.getRowData());
     	System.out.println(b.length + "  End...");*/
     	
-    	
-    	
 
     	//============== encrypt / decrypt tests end ==========================
     	

@@ -16,13 +16,13 @@ import java.util.zip.ZipInputStream;
 class DecryptGEEZipProcessor extends GEERawZipProcessor  {
 	
 	final String ALPHABET = "_-+[]{}1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";    //alphabet for encrypting  the source files names
-	private CeaserEncoderDecoder encdec;
+	private CeaserAlphabetEncoderDecoder encdec;
 	private GEERawZipProcessor geeZipProcessor;
 	
 	DecryptGEEZipProcessor(GEERawZipProcessor geeZipProcessor, String pass, int bufferSize){
 		super(bufferSize);
 		this.geeZipProcessor = geeZipProcessor;
-		if(pass!=null && !pass.equals("")) encdec =  new CeaserEncoderDecoder(ALPHABET, pass); 
+		if(pass!=null && !pass.equals("")) encdec =  new CeaserAlphabetEncoderDecoder(ALPHABET, pass); 
 		this.outData  = geeZipProcessor.outData;
 	}
 	
@@ -127,7 +127,7 @@ class DecryptGEEZipProcessor extends GEERawZipProcessor  {
 	}
 
 	
-	private  String encodeDecodePath(String path, String root, CeaserEncoderDecoder enc, boolean encode){
+	private  String encodeDecodePath(String path, String root, CeaserAlphabetEncoderDecoder enc, boolean encode){
 		String pathnoRoot = path.replace(root, "");   //remove root
 		
 		//split to folders 

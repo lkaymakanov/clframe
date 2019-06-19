@@ -40,8 +40,5 @@ public class Test {
         bd.setStreamOffset(0);
         bd.build();
     	
-    	//System.out.println("end test");
-    	
-    	//create memory input stream on file
 	}
 }
