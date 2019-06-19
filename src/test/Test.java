@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 
 import clframe.IModuleHandle;
 import clframe.GEEngineUtils.ENCRYPT_DECRYPT;
@@ -14,7 +15,7 @@ import clframe.GEEngineUtils.MODULE;
 
 public class Test {
 
-	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, SecurityException, InvocationTargetException, NoSuchMethodException {
 		InputStream is = null;
     	//create encrypted stream for ceaser key 
     	is = ENCRYPT_DECRYPT.CEASER.createCeaserCipherInputStream(new FileInputStream(new File("C:\\Users\\Lubo\\Desktop\\eng.eng")), ENCRYPT_DECRYPT.CEASER.createCeaserKey("mypass"), CIPHER_MODE.ENCRYPT);
@@ -25,8 +26,12 @@ public class Test {
     	//System.out.println(h);
     	
         ClassLoader cl = MODULE.createClassLoader(h, is.getClass().getClassLoader());
-        Class c = 	cl.loadClass("appgeengine.engine.reports.ReportPage");
-    	/** wrtie to file 
+        //Class c = 	cl.loadClass("appgeengine.engine.chat.ChatBean");
+        MODULE.InstanceBuilder ibd = new clframe.GEEngineUtils.MODULE.InstanceBuilder();
+        ibd.setClassLoader(cl); ibd.setClassName("java.lang.String");
+        Object o = ibd.build();
+    	System.out.println(o);
+        /** wrtie to file 
     	is = EncryptedInputStream.createCipherInputStream(new FileInputStream(new File("C:\\Users\\Lubo\\Desktop\\fileen.file")), CeaserKey.createCeaserKey("mypass"), ENCRYPT_MODE.DECRYPT);
         encbytes =  toByteArray(is);
     	fos = new FileOutputStream("C:\\Users\\Lubo\\Desktop\\filede.file");

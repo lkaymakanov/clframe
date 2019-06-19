@@ -47,6 +47,34 @@ public class GEEngineUtils {
 	 */
 	public static class MODULE {
 		
+		public static class InstanceBuilder{
+			private ClassLoader ldr;
+			private String className;
+			private Class<?>[] argtypes;
+			private Object[] args;
+			
+			public InstanceBuilder setClassLoader(ClassLoader ldr) {
+				this.ldr = ldr;
+				return this;
+			}
+			public void setClassName(String className) {
+				this.className = className;
+			}
+
+			public void setArgtypes(Class<?>[] argtypes) {
+				this.argtypes = argtypes;
+			}
+
+			public void setArgs(Object[] args) {
+				this.args = args;
+			}
+
+			public Object build() throws InstantiationException, IllegalAccessException, IllegalArgumentException, SecurityException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
+				return createInstance(ldr, className, argtypes, args);
+			}
+		}
+		
+		
 		/**Loads a module from input stream */
 		public static IModuleHandle loadModule(InputStream is) {
 			return loadEngineData(is, ONE_MBYTE, null);
@@ -63,15 +91,46 @@ public class GEEngineUtils {
 			return new GEEngineCl((IModule)moduleHandle, parentCl);
 		}
 		
+	
+		/**
+		 * Creates an instance of class for classloader & constructor arguments!!!
+		 * @param ldr
+		 * @param className
+		 * @param argtypes
+		 * @param args
+		 * @return
+		 * @throws InstantiationException
+		 * @throws IllegalAccessException
+		 * @throws IllegalArgumentException
+		 * @throws SecurityException
+		 * @throws InvocationTargetException
+		 * @throws NoSuchMethodException
+		 * @throws ClassNotFoundException
+		 */
+		private  static Object createInstance(ClassLoader ldr, String className,
+				Class<?>[] argtypes,
+				Object[] args) throws InstantiationException, IllegalAccessException, IllegalArgumentException, SecurityException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
+			return createInstance(ldr, ldr.loadClass(className), argtypes, args);
+		}
+		
+		
+		/**Creates an instance for classLoader, class & arguments*/
+		private static Object createInstance(ClassLoader ldr, Class type,
+				Class<?>[] argtypes,
+				Object[] args) throws InstantiationException, IllegalAccessException, IllegalArgumentException, SecurityException, InvocationTargetException, NoSuchMethodException  {
+		    if (argtypes == null || args == null)
+			return type.newInstance();
+		    return type.getConstructor(argtypes).newInstance(args);
+		}
 		
 		/***
 		 * Gets Module handle for engine!!!
 		 * @param engineName
 		 * @return
-		 */
+		 *//*
 		public static IModuleHandle getModuleHandle(String engineName) {
 			return engines.get(engineName);
-		}
+		}*/
 	}
 	
 	/***
