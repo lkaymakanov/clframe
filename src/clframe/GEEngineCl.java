@@ -1,5 +1,13 @@
 package clframe;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
+import java.util.Map;
 
 /**
  * A class loader that loads classes from {@link GEEngineData}!!!
@@ -8,8 +16,9 @@ package clframe;
  */
 class GEEngineCl extends ClassLoader  {
 	
-	IModule data;
-	GEEngineCl(IModule data, ClassLoader parent){
+	IModuleData data;
+	
+	GEEngineCl(IModuleData data, ClassLoader parent){
 		super(parent == null ? GEEngineCl.class.getClassLoader():parent);
 		this.data = data;
 	}
@@ -40,6 +49,7 @@ class GEEngineCl extends ClassLoader  {
         }
     }
     
+    
 
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
@@ -47,5 +57,57 @@ class GEEngineCl extends ClassLoader  {
     	return super.loadClass(name);
     }
     
+    
+
+    
+    //==================== resource management ===================================
+    @Override
+    public URL getResource(String name) {
+    	URL urlP=  super.getResource(name);
+    	if(urlP!=null) return urlP;
+    	URL myUrl = null;
+		try {
+			myUrl = new URL("", "", 1, name,  new MyStreamHandler(data.getResources()));
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+    	
+    	return myUrl;
+    }
+    
+    
+    
+    private static class MyStreamHandler extends URLStreamHandler{
+    	private Map<String, ResourceInfo> resources;
+    	private MyStreamHandler(Map<String, ResourceInfo> resources) {
+    		this.resources = resources;
+		}
+		@Override
+		protected URLConnection openConnection(URL u) throws IOException {
+			return new MyURLConnection(u, resources);
+		}
+    }
+    
+    
+    private static class MyURLConnection extends URLConnection{
+    	private String resourceName;
+    	private Map<String, ResourceInfo> resources;
+		protected MyURLConnection(URL url, Map<String, ResourceInfo> resources) {
+			super(url);
+			resourceName = url.getFile();
+			this.resources = resources;
+		}
+
+		@Override
+		public void connect() throws IOException {
+			
+		}
+		
+		@Override
+		public InputStream getInputStream() throws IOException {
+			ResourceInfo rInfo = resources.get(resourceName);
+			return new ByteArrayInputStream(rInfo.bytes);
+		}
+    }
     
 }
