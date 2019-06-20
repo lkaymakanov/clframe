@@ -2,7 +2,7 @@ package clframe;
 
 import java.util.Properties;
 
-interface IGEEngineData extends IModule{
+interface IGEEngineData extends IModuleData{
 	/* Map<String, ClassInfo> getClassMap();
 	 Map<String, ResourceInfo> getResources();
 	 Properties getProperties();*/

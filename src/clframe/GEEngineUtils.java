@@ -87,8 +87,8 @@ public class GEEngineUtils {
 		 * @return
 		 */
 		public static ClassLoader createClassLoader(IModuleHandle moduleHandle, ClassLoader parentCl) {
-			if(!(moduleHandle instanceof IModule)) throw new RuntimeException("Invalid module Handle...");
-			return new GEEngineCl((IModule)moduleHandle, parentCl);
+			if(!(moduleHandle instanceof IModuleData)) throw new RuntimeException("Invalid module Handle...");
+			return new GEEngineCl((IModuleData)moduleHandle, parentCl);
 		}
 		
 	
@@ -843,11 +843,11 @@ public class GEEngineUtils {
     }
     
     /***
-     * Creates IGEEngineData from raw data!!!
+     * Creates IModule from raw data!!!
      * @param rawData
      * @return
      */
-    private static IGEEngineData fromRawData(IMapRawData rawData, ClassLoader parent){
+    private static IModuleData fromRawData(IMapRawData rawData, ClassLoader parent){
     	GEEngineData data = new GEEngineData();
     	data.setRowData(rawData.getRawData());
     	for(RawData rd: rawData.getRawData().values()){
@@ -887,9 +887,8 @@ public class GEEngineUtils {
      */
     public static ClassLoader getClassLoader(List<byte []> data, ClassLoader parent) throws UnsupportedEncodingException{
     	IMapRawData  m = getRawDataForClassBytes(data);
-    	IGEEngineData edata = fromRawData(m, parent);
-    	
-    	return edata.getEngineClassLoader();
+    	IModuleData edata = fromRawData(m, parent);
+    	return MODULE.createClassLoader(edata, parent);
     }
     
     
@@ -962,8 +961,10 @@ public class GEEngineUtils {
     	System.out.println(printClassesNames(data));*/
     	
     	//loadClasses(data);
-    	
+    	initEngineClassLoader(data);
     	ClassLoader cl = data.getEngineClassLoader();
+    	
+    	
     	
     	Class c  =  Class.forName("net.is_bg.ltf.db.common.SqlLogFileReader$FileBuffer", true, cl);
     	Class c1 =  Class.forName("net.is_bg.ltf.db.common.SqlLogFileReader$TokenProcessor", true, cl);

@@ -9,7 +9,7 @@ import java.util.Properties;
  * @author Lubo
  *
  */
-interface IModule extends IMapRawData, IModuleHandle{
+interface IModuleData extends IMapRawData, IModuleHandle{
 	 Map<String, ClassInfo> getClassMap();
 	 Map<String, ResourceInfo> getResources();
 	 Map<String, Properties> getProperties();
