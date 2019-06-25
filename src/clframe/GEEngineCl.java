@@ -24,6 +24,11 @@ class GEEngineCl extends ClassLoader  {
 	}
 	
 	
+	GEEngineCl(InputStream is, ClassLoader parent){
+		this((IModuleData)GEEngineUtils.MODULE.loadModule(is), parent);
+	}
+	
+	
 	/***
 	 * Finds a class by package.classname (fully qualified class name) example test.test.TestClass  !!
 	 */
@@ -58,12 +63,10 @@ class GEEngineCl extends ClassLoader  {
     }
     
     
-
-    
     //==================== resource management ===================================
     @Override
     public URL getResource(String name) {
-    	URL urlP=  super.getResource(name);
+    	URL urlP =  super.getResource(name);
     	if(urlP!=null) return urlP;
     	URL myUrl = null;
 		try {
@@ -95,6 +98,7 @@ class GEEngineCl extends ClassLoader  {
 		protected MyURLConnection(URL url, Map<String, ResourceInfo> resources) {
 			super(url);
 			resourceName = url.getFile();
+			resourceName = (resourceName == null ? null : resourceName.replaceFirst("/", "").replaceAll("/", "."));
 			this.resources = resources;
 		}
 
@@ -106,6 +110,7 @@ class GEEngineCl extends ClassLoader  {
 		@Override
 		public InputStream getInputStream() throws IOException {
 			ResourceInfo rInfo = resources.get(resourceName);
+			if(rInfo == null) return null;
 			return new ByteArrayInputStream(rInfo.bytes);
 		}
     }

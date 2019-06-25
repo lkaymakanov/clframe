@@ -75,7 +75,67 @@ public class GEEngineUtils {
 		}
 		
 		
-		/**Loads a module from input stream */
+		public static IModuleHandle createInitModuleData() {
+			GEEngineData d =  new GEEngineData();
+			d.setProperties(new HashMap<String, Properties>());
+			return d;
+		}
+		
+		
+		/**
+		 * Add property to module!
+		 * @param module
+		 * @param slashName
+		 * @param is
+		 */
+		public static void addProperty(IModuleHandle module, String slashName, InputStream is) {
+			IModuleData data = toModuleData(module);
+			String key = slashName.replaceAll("/", ".");
+			data.getProperties().put(key, Utils.loadproperties(is));
+		}
+		
+		/***
+		 * Add class to module!!!
+		 * @param module
+		 * @param slashName
+		 * @param is
+		 * @throws IOException
+		 */
+		public static void addClass(IModuleHandle module, String slashName, InputStream is) throws IOException {
+			IModuleData data = toModuleData(module);
+			FileNamePath name = FileNamePath.fromFileNamePath(slashName);
+			ClassInfo cinfo = new ClassInfo(StreamUtils.toByteArray(is), name, name);
+			String key = slashName.replaceAll("/", ".");
+			data.getClassMap().put(key, cinfo);
+		}
+		
+		/***
+		 * Add resource to module!!!
+		 * @param module
+		 * @param slashName
+		 * @param is
+		 * @throws IOException
+		 */
+		public static void addResource(IModuleHandle module, String slashName, InputStream is) throws IOException {
+			IModuleData data = toModuleData(module);
+			FileNamePath name = FileNamePath.fromFileNamePath(slashName);
+			ResourceInfo rinfo = new  ResourceInfo(StreamUtils.toByteArray(is), name, name); //new ClassInfo(classBytes, pName, pName);
+			String key = slashName.replaceAll("/", ".");
+			data.getResources().put(key, rinfo);
+		}
+		
+		
+		/**
+		 * Cast module to ImoduleData
+		 * @param module
+		 * @return
+		 */
+		private static IModuleData toModuleData(IModuleHandle module) {
+			return (IModuleData)module;
+		}
+		
+		
+		/**Loads a module from zip input stream */
 		public static IModuleHandle loadModule(InputStream is) {
 			return loadEngineData(is, ONE_MBYTE, null);
 		}
@@ -123,14 +183,6 @@ public class GEEngineUtils {
 		    return type.getConstructor(argtypes).newInstance(args);
 		}
 		
-		/***
-		 * Gets Module handle for engine!!!
-		 * @param engineName
-		 * @return
-		 *//*
-		public static IModuleHandle getModuleHandle(String engineName) {
-			return engines.get(engineName);
-		}*/
 	}
 	
 	/***
@@ -370,6 +422,9 @@ public class GEEngineUtils {
 		}
     	return data.getEnigine();
     }
+    
+    
+    
     
     
     /***

@@ -26,6 +26,7 @@ public class Test {
     	//System.out.println(h);
     	
         ClassLoader cl = MODULE.createClassLoader(h, is.getClass().getClassLoader());
+        Object s =  cl.getResourceAsStream("/resources/pages/newhorizont/newhorizont_org.xhtml");
         //Class c = 	cl.loadClass("appgeengine.engine.chat.ChatBean");
         MODULE.InstanceBuilder ibd = new clframe.GEEngineUtils.MODULE.InstanceBuilder();
         ibd.setClassLoader(cl); ibd.setClassName("java.lang.String");
