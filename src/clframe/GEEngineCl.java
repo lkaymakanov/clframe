@@ -29,6 +29,12 @@ class GEEngineCl extends ClassLoader  {
 	}
 	
 	
+	byte [] getClassBytes(String clName) {
+	  ClassInfo i = data.getClassMap().get(clName);
+	  return i == null ? null : i.bytes;
+	}
+	
+	
 	/***
 	 * Finds a class by package.classname (fully qualified class name) example test.test.TestClass  !!
 	 */

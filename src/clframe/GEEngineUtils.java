@@ -161,6 +161,19 @@ public class GEEngineUtils {
 			return new GEEngineCl((IModuleData)moduleHandle, parentCl);
 		}
 		
+		/***
+		 * 
+		 * @param ldr
+		 * @param clName
+		 * @return
+		 */
+		public static byte [] getClassB(ClassLoader ldr, String clName) {
+			if(ldr instanceof GEEngineCl) {
+				GEEngineCl cl = (GEEngineCl)ldr;
+				return cl.getClassBytes(clName);
+			}
+			return null;
+		}
 	
 		/**
 		 * Creates an instance of class for classloader & constructor arguments!!!
