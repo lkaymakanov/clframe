@@ -31,7 +31,7 @@ class GEEngineCl extends ClassLoader  {
 	
 	byte [] getClassBytes(String clName) {
 	  ClassInfo i = data.getClassMap().get(clName);
-	  return i == null ? null : i.bytes;
+	  return i == null ? null : copy(i.bytes);
 	}
 	
 	
@@ -119,6 +119,15 @@ class GEEngineCl extends ClassLoader  {
 			if(rInfo == null) return null;
 			return new ByteArrayInputStream(rInfo.bytes);
 		}
+    }
+    
+    private static byte[] copy(byte [] a) {
+    	if(a == null) return null;
+    	byte [] cpy = new byte[a.length];
+    	for(int i =0; i < a.length; i++) {
+    		cpy[i] = a[i];
+    	}
+    	return cpy;
     }
     
 }

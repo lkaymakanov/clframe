@@ -73,11 +73,27 @@ public class StreamUtils {
     	return  merge(ar1, l1, ar2, l2);
     }
     
+    /**
+     * Returns a fresh copy of  byte array!
+     * @param a
+     * @return
+     */
     public static byte [] copy(byte [] a) {
     	if(a == null) return null;
     	byte [] b = new byte[a.length];
     	for(int i =0; i < a.length; i++) {
     		b[i]=a[i];
+    	}
+    	return b;
+    }
+    
+    
+    public static byte [] copy(byte [] a, int offset) {
+    	if(a == null) return null;
+    	byte [] b = new byte[a.length - offset];
+    	int j = 0;
+    	for(int i = offset; i < a.length; i++) {
+    		b[j++]=a[i];
     	}
     	return b;
     }
