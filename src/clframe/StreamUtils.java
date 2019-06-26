@@ -73,6 +73,21 @@ public class StreamUtils {
     	return  merge(ar1, l1, ar2, l2);
     }
     
+    public static byte [] copy(byte [] a) {
+    	if(a == null) return null;
+    	byte [] b = new byte[a.length];
+    	for(int i =0; i < a.length; i++) {
+    		b[i]=a[i];
+    	}
+    	return b;
+    }
+    
+    
+    public static InputStream copy(InputStream is) throws IOException {
+    	if(is == null) return is;
+    	return new MemoryInputStream(StreamUtils.toInputStream(StreamUtils.copy(StreamUtils.toByteArray(is))));
+    }
+    
     /**
      * Converts byte [] to ByteArrayOutputSream
      * @param bytes
@@ -84,6 +99,16 @@ public class StreamUtils {
     	os.write(bytes);
     	os.close();
     	return os;
+    }
+    
+    /**Widens byte array to int array!*/
+    public static int [] widen(byte [] b) {
+    	if(b == null) return null;
+    	int [] cpy = new int [b.length]; 
+    	for(int i=0; i < b.length; i ++) {
+    		cpy[i] = b[i];
+    	}
+    	return cpy;
     }
     
     

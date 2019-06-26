@@ -18,7 +18,7 @@ public class Test {
 	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, SecurityException, InvocationTargetException, NoSuchMethodException {
 		InputStream is = null;
     	//create encrypted stream for ceaser key 
-    	is = ENCRYPT_DECRYPT.CEASER.createCeaserCipherInputStream(new FileInputStream(new File("C:\\Users\\Lubo\\Desktop\\eng.eng")), ENCRYPT_DECRYPT.CEASER.createCeaserKey("mypass"), CIPHER_MODE.ENCRYPT);
+    	is = ENCRYPT_DECRYPT.CEASER.createCeaserCipherInputStream(new FileInputStream(new File("D:\\testengine\\md.zip")), ENCRYPT_DECRYPT.CEASER.createCeaserKey("mypass"), CIPHER_MODE.ENCRYPT);
     	//is.close();
     	//ENCRYPT_DECRYPT.CEASER.createEngine(ENCRYPT_DECRYPT.CEASER.createCeaserCipherInputStream(is, ENCRYPT_DECRYPT.CEASER.createCeaserKey("mypass"), CIPHER_MODE.DECRYPT), 0);
     	
@@ -43,7 +43,7 @@ public class Test {
         ENGINE.EngineBuilder bd = new ENGINE.EngineBuilder();
         bd.setInputStream(new FileInputStream(new File("C:\\Users\\Lubo\\Desktop\\eng.eng")));
         bd.setPass(null);
-        bd.setStreamOffset(0);
+        bd.setOff(0);
         bd.build();
     	
 	}

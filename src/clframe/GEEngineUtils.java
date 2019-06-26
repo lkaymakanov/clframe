@@ -74,6 +74,16 @@ public class GEEngineUtils {
 			}
 		}
 		
+		/**
+		 * Creates reverse input stream!
+		 * @param is
+		 * @return
+		 * @throws IOException
+		 */
+		public static InputStream createReverseInputStream(InputStream is) throws IOException {
+			return new ReverseInputStream(is);
+		}
+		
 		
 		public static IModuleHandle createInitModuleData() {
 			GEEngineData d =  new GEEngineData();
@@ -265,7 +275,7 @@ public class GEEngineUtils {
 				this.is = is;
 				return this;
 			}
-			public EngineBuilder setStreamOffset(int offset) {
+			public EngineBuilder setOff(int offset) {
 				this.streamOffset = offset;
 				return this;
 			}
@@ -949,7 +959,8 @@ public class GEEngineUtils {
     
     
     @SuppressWarnings("unused")
-	private static void printByteArrayMatrix(byte [] b,  int bytesPerRow, String className) throws UnsupportedEncodingException{
+	public
+	static void printByteArrayMatrix(byte [] b,  int bytesPerRow, String className) throws UnsupportedEncodingException{
 	   	 if(bytesPerRow > b.length) bytesPerRow = b.length;
 	   	 String byteArrayPrexif = " byte []  " + className + " = new byte[]{ \n" ;
 	   	 StringBuilder bd = new StringBuilder();
