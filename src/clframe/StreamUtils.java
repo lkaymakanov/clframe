@@ -5,11 +5,22 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class StreamUtils {
 	private static final int ONE_MBYTE = 1024*1024;
+	
+	
+	public static byte[] getByteRange() {
+		byte[] b = new byte[256];
+		for(int i = 0; i < 256; i ++) {
+			b[i] = (byte)i;
+		}
+		return b;
+	}
+	
 	/***
      * merge 2 byte  arrays..
      * @param a1
@@ -96,6 +107,61 @@ public class StreamUtils {
     		b[j++]=a[i];
     	}
     	return b;
+    }
+   
+    
+    public static byte [] copy(byte [] a, int loffset, int roffset) {
+    	if(a == null) return null;
+    	if(loffset + roffset >= a.length) return null;
+    	byte [] b = new byte[a.length - (loffset + roffset)];
+    	int j = 0;
+    	for(int i = loffset; i < (a.length - roffset); i++) {
+    		b[j++]=a[i];
+    	}
+    	return b;
+    }
+    
+    
+    
+    public static byte [] copyNBytes(byte [] a, int loffset, int count) {
+    	if(a == null) return null;
+    	byte [] b = new byte[a.length - (loffset)];
+    	int j = 0;
+    	for(int i = loffset; i < (loffset + count); i++) {
+    		b[j++]=a[i];
+    	}
+    	return b;
+    }
+    
+    public static byte [] reverseCopy(byte [] b) {
+    	if(b == null) return null;
+    	int l = b.length;
+    	byte [] a = new byte[b.length];
+		for(int i=0; i < l; i++) {
+			a[i]=b[i];
+		}
+		return a;
+    }
+    
+    public static String mangle(String s,  byte [] off) throws UnsupportedEncodingException {
+    	byte [] b = mangleB(s.getBytes("UTF-8"), off);
+    	return ByteRep.rep(b);
+    }
+    
+    public static String demangle(String s,  byte [] off) throws UnsupportedEncodingException {
+    	byte [] b =  demangleB(ByteRep.fromStringByteRep(s), off);
+    	return new String(b);
+    }
+    
+    private static byte[] mangleB(byte [] b, byte [] off)  {
+    	CeaserEncoderDecoder d= new CeaserEncoderDecoder(widen(off));
+    	return d.encode(b);
+    }
+    
+    
+    private static byte []  demangleB(byte[] b, byte [] off)  {
+    	CeaserEncoderDecoder d= new CeaserEncoderDecoder(widen(off));
+    	return d.decode(b);
     }
     
     
