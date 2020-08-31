@@ -83,7 +83,7 @@ class FileNamePath implements Serializable {
 		return new FileNamePath(path, fName);
 	}
 	
-	public static void mkDir(String parent, String [] mkdirpath, String fileSeparator){
+    static void mkDir(String parent, String [] mkdirpath, String fileSeparator){
 		if(parent == null || mkdirpath == null) return;
 		String fullpath = parent.equals("") ? getPathPrivate(mkdirpath, fileSeparator) : parent + "\\" + getPathPrivate(mkdirpath, fileSeparator);
 		File f = new File(fullpath);

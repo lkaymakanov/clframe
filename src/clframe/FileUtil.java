@@ -1,3 +1,4 @@
+
 package clframe;
 
 
@@ -106,8 +107,7 @@ final class FileUtil {
 
 		            String[] children = sourceLocation.list();
 		            for (int i=0; i<children.length; i++) {
-		                copyDirectory(new File(sourceLocation, children[i]),
-		                        new File(targetLocation, children[i]));
+		                copyDirectory(new File(sourceLocation, children[i]), new File(targetLocation, children[i]));
 		            }
 		        } else {
 
@@ -115,7 +115,7 @@ final class FileUtil {
 		            OutputStream out = new FileOutputStream(targetLocation);
 		            try{
 			            // Copy the bits from instream to outstream
-			            byte[] buf = new byte[1024];
+			            byte[] buf = new byte[1024*1024];
 			            int len;
 			            while ((len = in.read(buf)) > 0) {
 			                out.write(buf, 0, len);
@@ -128,7 +128,7 @@ final class FileUtil {
 	}
 	
 	
-	public static String Md5Hash(byte [] b) {
+	public static String md5Hash(byte [] b) {
 		try{
 		  MessageDigest md;
           md = MessageDigest.getInstance("MD5");
@@ -141,7 +141,7 @@ final class FileUtil {
 		}
 	}
 	
-	public static String Md5Hash(String text)  { 
+	public static String md5Hash(String text)  { 
 		try{
 	        MessageDigest md;
 	        md = MessageDigest.getInstance("MD5");
@@ -327,8 +327,12 @@ final class FileUtil {
 
     public static long checksumMappedFile(String filepath) throws IOException {
 		  FileInputStream inputStream = new FileInputStream(filepath);
+		  return checksumMappedFile(inputStream);
+    }
+    /**end of CRC calculator*/
+    
+    public static long checksumMappedFile(FileInputStream inputStream) throws IOException {
 		  FileChannel fileChannel = inputStream.getChannel();
-
 		  int len = (int) fileChannel.size();
 		  MappedByteBuffer buffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, len);
 
@@ -340,44 +344,18 @@ final class FileUtil {
 		  }
 		  inputStream.close();
 		  return crc.getValue();
-    }
-    /**end of CRC calculator*/
-    
-	
+  }
 	
 	
  
-	public static char[] DOSCYR2UTF8(byte[] b) throws IOException {
-		int code = 0;
-		
-		if (b == null) return null;
-		char bb[] = new char[b.length];		
-		
-		for (int i = 0; i < b.length; i++) {
-		  if (b[i] < 0) 
-			code = b[i] + 192;  
-		  else code = b[i]; 
-		  if (code >= 128 )
-		   code = (code + 912);
-		  else code = b[i]; 
-		  if (code == 185) code = 'N'; //№
-		  bb[i] = (char)code;
-		}
-		return bb;
-	}
-	
-/*	function WinCyr ( InS : String ) : String;
-	var
-	 i,l : Integer;
-	begin
-	  Result := InS;  l := Length(InS);
-	  If l < 1  Then  Exit;
-	  For i := 1 to l Do  Begin
-	     // If Ord(InS[i]) = 185    Then InS[i] := 'N';  // 185(¹) --> 78(N)
-	      If (Ord(InS[i]) < 192) and (Ord(InS[i]) > 191-64) Then
-	        InS[i] := Chr(Ord(InS[i])+64);
-	  End;
-	  Result := InS;
-	end; */
+	/*
+	 * public static char[] DOSCYR2UTF8(byte[] b) throws IOException { int code = 0;
+	 * 
+	 * if (b == null) return null; char bb[] = new char[b.length];
+	 * 
+	 * for (int i = 0; i < b.length; i++) { if (b[i] < 0) code = b[i] + 192; else
+	 * code = b[i]; if (code >= 128 ) code = (code + 912); else code = b[i]; if
+	 * (code == 185) code = 'N'; //№ bb[i] = (char)code; } return bb; }
+	 */
 	
 }

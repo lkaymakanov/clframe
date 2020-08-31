@@ -22,7 +22,7 @@ class DecryptGEEZipProcessor extends GEERawZipProcessor  {
 	DecryptGEEZipProcessor(GEERawZipProcessor geeZipProcessor, String pass, int bufferSize){
 		super(bufferSize);
 		this.geeZipProcessor = geeZipProcessor;
-		if(pass!=null && !pass.equals("")) encdec =  new CeaserAlphabetEncoderDecoder(ALPHABET, pass); 
+		if(pass!=null && !pass.equals("")) encdec = new CeaserAlphabetEncoderDecoder(ALPHABET, pass); 
 		this.outData  = geeZipProcessor.outData;
 	}
 	
@@ -80,7 +80,6 @@ class DecryptGEEZipProcessor extends GEERawZipProcessor  {
 			}
 		}
 		catch (Exception e) {
-			// TODO: handle exception
 			throw new RuntimeException(e);
 		}
 	}

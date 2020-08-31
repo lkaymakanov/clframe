@@ -44,7 +44,7 @@ class ZipUtils {
         	//get the zipped file list entry
         	ZipEntry ze = zis.getNextEntry();
         	while(ze!=null){
-        		String ename = ze.getName();
+        		//ze.getName();
         		processor.process(ze, zis);
                 ze = zis.getNextEntry();
         	}

@@ -41,12 +41,17 @@ public class GEEngineUtils {
 	
 	/***
 	 * Loading modules namespace!
-	 * Used to load module data & create cl on that data!
+	 * Used to load module data & create class loader  on that data!
 	 * @author Lubo
 	 *
 	 */
 	public static class MODULE {
 		
+		/***
+		 * Used to build object instances from a class loader!!!
+		 * @author lubo
+		 *
+		 */
 		public static class InstanceBuilder{
 			private ClassLoader ldr;
 			private String className;
@@ -57,16 +62,19 @@ public class GEEngineUtils {
 				this.ldr = ldr;
 				return this;
 			}
-			public void setClassName(String className) {
+			public InstanceBuilder setClassName(String className) {
 				this.className = className;
+				return this;
 			}
 
-			public void setArgtypes(Class<?>[] argtypes) {
+			public InstanceBuilder setArgtypes(Class<?>[] argtypes) {
 				this.argtypes = argtypes;
+				return this;
 			}
 
-			public void setArgs(Object[] args) {
+			public InstanceBuilder setArgs(Object[] args) {
 				this.args = args;
+				return this;
 			}
 
 			public Object build() throws InstantiationException, IllegalAccessException, IllegalArgumentException, SecurityException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
@@ -117,6 +125,26 @@ public class GEEngineUtils {
 			ClassInfo cinfo = new ClassInfo(StreamUtils.toByteArray(is), name, name);
 			String key = slashName.replaceAll("/", ".");
 			data.getClassMap().put(key, cinfo);
+		}
+		
+		public static Set<String> getClassesNames(IModuleHandle h){
+			IModuleData data = toModuleData(h);
+			return copySet(data.getClassMap().keySet());
+		}
+		
+		
+		public static Set<String> getResourcesNames(IModuleHandle h){
+			IModuleData data = toModuleData(h);
+			return copySet(data.getResources().keySet());
+		}
+		
+		private static Set copySet(Set cpy){
+			if(cpy == null) return null;
+			Set s = new TreeSet<>();
+			for(Object k : cpy) {
+				s.add(k);
+			}
+			return s;
 		}
 		
 		/***
@@ -235,7 +263,7 @@ public class GEEngineUtils {
 			 * @return
 			 * @throws IOException
 			 */
-			public static CeaserCipherInputStream createCeaserCipherInputStream(InputStream is, Key key, CIPHER_MODE mode) throws IOException {
+			public static InputStream createCeaserCipherInputStream(InputStream is, Key key, CIPHER_MODE mode) throws IOException {
 				return CeaserCipherInputStream.createCeaserCipherInputStream(is, key, mode);
 			}
 			
@@ -248,19 +276,19 @@ public class GEEngineUtils {
 			 * @return
 			 * @throws IOException
 			 */
-			public static  IGEEngine createEngine(CeaserCipherInputStream cis,  int offset) throws IOException {
+			public static  IGEEngine createEngine(InputStream cis,  int offset) throws IOException {
 				return GEEngineUtils.createEngine(cis, offset);
 			}
 			
 			/***
-			 * Creates engine from an encrypted input stream!!!
+			 * Creates engine from an encrypted input ceaser input stream!!!
 			 * @param is
 			 * @param key
 			 * @param algorithm
 			 * @return
 			 * @throws IOException
 			 */
-			public static  IGEEngine createEngine(CeaserCipherInputStream cis) throws IOException {
+			public static  IGEEngine createEngine(InputStream cis) throws IOException {
 				return createEngine(cis,  0);
 			}
 			
@@ -704,7 +732,7 @@ public class GEEngineUtils {
      * @return
      */
     public static Set<String> getEngineClassNames(String engineName){
-       IGEEngineData data = 	engines.get(engineName);
+       IGEEngineData data = engines.get(engineName);
        if(data == null) return null;
        return data.getClassMap().keySet();
     }
@@ -716,7 +744,7 @@ public class GEEngineUtils {
      * @return
      */
     public static Set<String> getEngineResourceNames(String engineName){
-       IGEEngineData data = 	engines.get(engineName);
+       IGEEngineData data = engines.get(engineName);
        if(data == null) return null;
        return data.getResources().keySet();
     }

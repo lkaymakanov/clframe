@@ -1,3 +1,4 @@
+
 package clframe;
 
 import java.io.ByteArrayInputStream;
@@ -36,6 +37,6 @@ abstract class CipherInputStream extends InputStream {
 	}
 	
 	/**Encrypts or decrypts byte array based on mode*/
-	protected abstract byte[] encryptDecrpyt(byte[] b);// 
-		
+	protected abstract byte[] encryptDecrpyt(byte[] b);
+	
 }

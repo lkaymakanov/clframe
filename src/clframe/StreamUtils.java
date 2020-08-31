@@ -9,9 +9,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import clframe.Base64MeinePTool.Decoder;
+import clframe.Base64MeinePTool.Encoder;
+
 public class StreamUtils {
 	private static final int ONE_MBYTE = 1024*1024;
-	
 	
 	public static byte[] getByteRange() {
 		byte[] b = new byte[256];
@@ -57,6 +59,22 @@ public class StreamUtils {
     	}
     	is.close();
 		return engine;
+    }
+    
+    
+    public static String  toBase64Txt(InputStream is) throws IOException{
+    	Encoder endec =  Base64MeinePTool.getEncoder();
+    	return endec.encodeToString(toByteArray(is));
+    }
+    
+    public static byte [] fromBase64Txt(String txt) throws IOException{
+    	Decoder d =  Base64MeinePTool.getDecoder();
+    	return d.decode(txt);
+    }
+    
+    public static String  toBase64Txt(byte []arr) throws IOException{
+    	Encoder endec =  Base64MeinePTool.getEncoder();
+    	return endec.encodeToString(arr);
     }
     
     /***
@@ -143,6 +161,26 @@ public class StreamUtils {
 		return a;
     }
     
+    public static byte [] xor(byte [] b, byte xor) {
+    	if(b == null) return b;
+    	byte [] newArr = new byte[b.length];
+    	int i =0;
+    	for(byte bb:b) {
+    		newArr[i++] = (byte)(bb ^ xor); 
+    	}
+    	return newArr;
+    }
+    
+    public static byte [] xor(byte [] b, byte [] xor) {
+    	if(b == null) return b;
+    	byte [] newArr = new byte[b.length];
+    	int i =0;
+    	for(byte bb:b) {
+    		newArr[i++] = (byte)(bb ^ xor[i % xor.length]); 
+    	}
+    	return newArr;
+    }
+    
     public static String mangle(String s,  byte [] off) throws UnsupportedEncodingException {
     	byte [] b = mangleB(s.getBytes("UTF-8"), off);
     	return ByteRep.rep(b);
@@ -160,7 +198,7 @@ public class StreamUtils {
     
     
     private static byte []  demangleB(byte[] b, byte [] off)  {
-    	CeaserEncoderDecoder d= new CeaserEncoderDecoder(widen(off));
+    	CeaserEncoderDecoder d = new CeaserEncoderDecoder(widen(off));
     	return d.decode(b);
     }
     
