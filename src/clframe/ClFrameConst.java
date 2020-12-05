@@ -1,6 +1,6 @@
 package clframe;
 
-public class ClFrameConst {
+class ClFrameConst {
 
 	public final static String CLASS_EXTENSION = ".class";
 	

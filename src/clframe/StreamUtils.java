@@ -23,6 +23,10 @@ public class StreamUtils {
 		return b;
 	}
 	
+	public static IStreamConverter getPaddingIStreamConverter(InputStream orgstream, InputStream padding, boolean left) {
+		return new PaddingInpustStreamConverter(orgstream, padding, left);
+	}
+	
 	/***
      * merge 2 byte  arrays..
      * @param a1
@@ -38,6 +42,16 @@ public class StreamUtils {
     	for(; i < a1Size; i++) {merge[i] = a1[i];}
     	for(int j=0; j < a2Size;) {merge[i++] = a2[j++]; }
     	return merge;
+    }
+    
+    public static byte [] reverse (byte [] arr) {
+    	if(arr ==null) return arr;
+    	byte []res = new byte [arr.length];
+    	int j=0;
+    	for(int i = arr.length-1; i >=0; i--) {
+    		res[j++] = arr[i];
+    	}
+    	return res;
     }
     
     
@@ -117,11 +131,11 @@ public class StreamUtils {
     }
     
     
-    public static byte [] copy(byte [] a, int offset) {
+    public static byte [] copy(byte [] a, int loffset) {
     	if(a == null) return null;
-    	byte [] b = new byte[a.length - offset];
+    	byte [] b = new byte[a.length - loffset];
     	int j = 0;
-    	for(int i = offset; i < a.length; i++) {
+    	for(int i = loffset; i < a.length; i++) {
     		b[j++]=a[i];
     	}
     	return b;
@@ -151,15 +165,11 @@ public class StreamUtils {
     	return b;
     }
     
-    public static byte [] reverseCopy(byte [] b) {
-    	if(b == null) return null;
-    	int l = b.length;
-    	byte [] a = new byte[b.length];
-		for(int i=0; i < l; i++) {
-			a[i]=b[i];
-		}
-		return a;
-    }
+	/*
+	 * public static byte [] reverseCopy(byte [] b) { if(b == null) return null; int
+	 * l = b.length; byte [] a = new byte[b.length]; for(int i=0; i < l; i++) {
+	 * a[i]=b[i]; } return a; }
+	 */
     
     public static byte [] xor(byte [] b, byte xor) {
     	if(b == null) return b;

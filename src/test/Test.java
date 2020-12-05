@@ -31,6 +31,13 @@ public class Test {
 		GEEngineUtils.setLoggerName("sysout");
 		//testLoadingModule();
 		
+		byte [] arr = new byte[256];
+		for(int i=-128; i < 128; i++) {
+			arr[i+128] = (byte)i;
+		}
+		
+	   arr =	StreamUtils.reverse(arr);
+		
 		List<String> lines =   readPlainTxtFromFile(new File("MyTest.java"));
 		for(String l:lines) {
 			for(int i =0; i < l.length(); i++) {
@@ -42,6 +49,9 @@ public class Test {
 		}
 		System.out.println(lines);
 	}
+	
+	
+	
 	
 	
 	private static void testLoadingModule() throws FileNotFoundException, IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
