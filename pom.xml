@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>clframe</groupId>
   <artifactId>clframe</artifactId>
-  <version>1.6.57</version>
+  <version>1.6.60</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>

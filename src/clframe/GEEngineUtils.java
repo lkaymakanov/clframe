@@ -104,6 +104,10 @@ public class GEEngineUtils {
 	 */
 	public static class MODULE {
 		
+		public static InstanceBuilder getInstanceBuilder() {
+			return new InstanceBuilder();
+		}
+		
 		/***
 		 * Used to build object instances from a class loader!!!
 		 * @author lubo
@@ -114,6 +118,10 @@ public class GEEngineUtils {
 			private String className;
 			private Class<?>[] argtypes;
 			private Object[] args;
+			
+			private InstanceBuilder() {}
+			
+			
 			
 			public InstanceBuilder setClassLoader(ClassLoader ldr) {
 				this.ldr = ldr;
@@ -451,10 +459,17 @@ public class GEEngineUtils {
 	}
 	
 	public static class ENGINE{
+		
+		public static EngineBuilder getBuilder() {
+		    return new EngineBuilder();	
+		}
+		
 		public static class EngineBuilder {
 			private InputStream is;
 			private int streamOffset;
 			private String pass;
+			
+			private EngineBuilder() {}
 			
 			public EngineBuilder setInputStream(InputStream is) {
 				this.is = is;
@@ -472,6 +487,7 @@ public class GEEngineUtils {
 			public IGEEngine build() throws IOException {
 				return createEngine(is, streamOffset, pass);
 			}
+			
 		}
 	}
 	

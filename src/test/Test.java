@@ -71,7 +71,7 @@ public class Test {
         Object s =  cl.getResourceAsStream("/resources/pages/newhorizont/newhorizont_org.xhtml");
         
         //Class c = 	cl.loadClass("appgeengine.engine.chat.ChatBean");
-        MODULE.InstanceBuilder ibd = new GEEngineUtils.MODULE.InstanceBuilder();
+        MODULE.InstanceBuilder ibd =  MODULE.getInstanceBuilder();
         ibd.setClassLoader(cl).setClassName("java.lang.String");
         Object o = ibd.build();
     	//System.out.println(o);
@@ -84,7 +84,7 @@ public class Test {
     	*/
         
         //creates engine from engine fileInputStream
-        ENGINE.EngineBuilder bd = new ENGINE.EngineBuilder();
+        ENGINE.EngineBuilder bd =  ENGINE.getBuilder();
         bd.setInputStream(new FileInputStream(new File("C:\\Users\\Lubo\\Desktop\\eng.eng")));
         bd.setPass(null);
         bd.setOff(0);
