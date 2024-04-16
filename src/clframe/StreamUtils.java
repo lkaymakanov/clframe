@@ -35,13 +35,14 @@ public class StreamUtils {
      */
     public static byte[] merge(byte[] a1, int a1Size, byte [] a2, int a2Size) {
     	if(a1==null && a2 ==null) return null;
-    	if(a1==null) { byte [] merge = new byte[a2Size]; for(int j=0; j < a2Size;j++) {merge[j] = a2[j]; }   return merge; }
+    	ByteArrayOutputStream bos =new ByteArrayOutputStream();
+    	
+    	if(a1==null) { for(int j=0; j < a2Size;j++) {bos.write(a2[j]); }   return bos.toByteArray(); }
     	if(a2==null) { byte [] merge = new byte[a1Size]; for(int j=0; j < a1Size;j++) {merge[j] = a1[j]; }   return merge; }
-    	byte [] merge = new byte[a1Size + a2Size];
-    	int i = 0;
-    	for(; i < a1Size; i++) {merge[i] = a1[i];}
-    	for(int j=0; j < a2Size;) {merge[i++] = a2[j++]; }
-    	return merge;
+    	
+    	for(int i=0; i < a1Size; i++) {bos.write(a1[i]);}
+    	for(int j=0; j < a2Size;) {bos.write(a2[j++]); }
+    	return bos.toByteArray();
     }
     
     public static byte [] reverse (byte [] arr) {

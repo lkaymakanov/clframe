@@ -61,6 +61,7 @@ public class Test {
 		IModuleHandle h = loadModule(new File("C:\\testengine\\md.zip"));
 		
 		
+		
         ClassLoader cl = MODULE.createClassLoader(h, Test.class.getClassLoader());
         Set<String> resNames =  MODULE.getResourcesNames(h);
         resNames.clear();

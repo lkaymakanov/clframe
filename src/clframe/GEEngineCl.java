@@ -18,6 +18,8 @@ class GEEngineCl extends ClassLoader  {
 	
 	IModuleData data;
 	
+	
+	
 	GEEngineCl(IModuleData data, ClassLoader parent){
 		super(parent == null ? GEEngineCl.class.getClassLoader():parent);
 		this.data = data;
@@ -93,15 +95,15 @@ class GEEngineCl extends ClassLoader  {
 		}
 		@Override
 		protected URLConnection openConnection(URL u) throws IOException {
-			return new MyURLConnection(u, resources);
+			return new MyResourceURLConnection(u, resources);
 		}
     }
     
     
-    private static class MyURLConnection extends URLConnection{
+    private static class MyResourceURLConnection extends URLConnection{
     	private String resourceName;
     	private Map<String, ResourceInfo> resources;
-		protected MyURLConnection(URL url, Map<String, ResourceInfo> resources) {
+		protected MyResourceURLConnection(URL url, Map<String, ResourceInfo> resources) {
 			super(url);
 			resourceName = url.getFile();
 			resourceName = (resourceName == null ? null : resourceName.replaceFirst("/", "").replaceAll("/", "."));

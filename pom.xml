@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>clframe</groupId>
+  <artifactId>clframe</artifactId>
+  <version>1.6.57</version>
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.7.0</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  
+  <distributionManagement>
+              <repository>
+                     <id>cc-private-repo</id>
+                     <name>Release</name>
+                     <url>http://10.240.44.149:8081/repository/maven-releases/</url>
+              </repository>
+              <snapshotRepository>
+                     <id>cc-private-repo</id>
+                     <name>Snapshot</name>
+                     <url>http://10.240.44.149:8081/repository/maven-snapshots</url>
+              </snapshotRepository>
+  </distributionManagement>
+</project>

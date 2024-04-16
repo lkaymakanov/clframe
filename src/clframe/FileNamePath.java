@@ -95,10 +95,16 @@ class FileNamePath implements Serializable {
 		}
 	}
 	
+    
+	@Override
+	public String toString() {
+		return getFullName(); //super.toString();
+	}
+	
 	
 	public static void main(String [] args){
 	   	String p [] = new String [] {"d1", "d2", "d3","d4", "d5", "d6","d7", "d8", "d9","d10", "d11", "d12"};
-		mkDir("D:", p, "\\");
+		//mkDir("D:", p, "\\");
 		
 	   System.out.println(	new File("D:\\mydir\\mydir").exists());
 		
